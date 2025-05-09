@@ -35,6 +35,7 @@ src/
 │   │   └── com/example/demo/   # 主包目录
 │   │       ├── controller/     # 控制器层，处理 HTTP 请求
 │   │       ├── service/        # 服务层，处理业务逻辑
+│   │       │   └── serviceImpl/# 服务层实现  
 │   │       ├── repository/     # 数据访问层，与数据库交互
 │   │       ├── model(pojo)/    # 实体类，对应数据库表
 │   │       ├── dto/            # 数据传输对象，前转后
@@ -235,10 +236,12 @@ public class Response <T>{
 ### 5.数据库规范
 
 * 现学
+* 一般命名为驼峰？
 
 ### 6.git代码管理
 
 * 待我摸索一下
+* 提议：git中，pull再push自动合并修改的内容，不需要特别创建分支
 
 
 
@@ -266,6 +269,7 @@ public class Response <T>{
 3. 使用适当的异常处理机制
 4. 实现日志记录
 5. 注意数据安全性
+6. 
 
 
 
