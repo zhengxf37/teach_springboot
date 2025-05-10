@@ -35,14 +35,11 @@ public class AuthResponse {
 
     private String username;
 
-    private String email;
-
     private String userType;
 
     public AuthResponse(User user) {
         this.userId = user.getUserId();
         this.username = user.getUsername();
-        this.email = user.getEmail();
         this.userType = String.valueOf(user.getUserType().name());
     }
 

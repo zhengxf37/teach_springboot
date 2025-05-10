@@ -16,12 +16,13 @@ import java.util.Objects;
  * - Service 层或 Repository 层传递的异常
  *
  * 核心功能：
- * - 统一异常处理
- *
+ * - 统一异常处理，包括
+ * - 业务异常
+ * - 参数异常
  *
  * 元信息：
  * @author zxf
- * @version 1.0
+ * @version 2.0
  * @since 2025-5-9
  */
 @RestControllerAdvice  // 标记该类为全局异常处理组件

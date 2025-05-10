@@ -9,6 +9,22 @@ import org.tutorial.tutorial_platform.pojo.User;
 import org.tutorial.tutorial_platform.repository.UserRepository;
 import org.tutorial.tutorial_platform.vo.AuthResponse;
 
+/**
+ * AuthServiceImp - 认证服务实现类
+ *
+ * 实现 AuthService 接口定义的核心认证逻辑，包括：
+ * - 用户注册：处理新用户注册流程
+ * - 用户登录：验证用户凭证有效性
+ *
+ * 依赖组件：
+ * - UserRepository 用户数据访问接口
+ * - PasswordEncoder 密码编码器
+ *
+ * 元信息：
+ * @author zxf
+ * @version 1.0
+ * @since 2025-05-10
+ */
 @Service
 public class AuthServiceImp implements AuthService {
     @Autowired
@@ -20,25 +36,33 @@ public class AuthServiceImp implements AuthService {
 
     @Override
     public AuthResponse register(RegisterDTO registerDTO) {
+        // 1. 唯一性校验
         if (userRepository.existsByUsername(registerDTO.getUsername())) {
             throw new RuntimeException("用户名已存在");
         }
         if (userRepository.existsByEmail(registerDTO.getEmail())) {
             throw new RuntimeException("邮箱已存在");
         }
+
+        // 2. 实体构建
         User user = new User();
         user.setUsername(registerDTO.getUsername());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user.setEmail(registerDTO.getEmail());
         user.setUserType(registerDTO.getUserType());
+
+        // 3. 持久化操作
         User savedUser = userRepository.save(user);  // 返回增强后的user(添加主键id和创建时间）
         return new AuthResponse(savedUser);
     }
 
     @Override
     public AuthResponse login(LoginDTO loginDTO) {
+        // 1. 用户查询
         User user = userRepository.findByUsername(loginDTO.getUsername())
                 .orElseThrow(() -> new RuntimeException("用户名错误"));
+
+        // 2. 密码验证
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             throw new RuntimeException("密码错误");
         }

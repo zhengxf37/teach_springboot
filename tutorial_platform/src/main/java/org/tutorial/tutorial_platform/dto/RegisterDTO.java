@@ -36,7 +36,7 @@ import org.tutorial.tutorial_platform.pojo.UserType;
 public class RegisterDTO {
     /**
      * 用户名
-     * @constraint 非空且长度4-20个字符
+     * @constraint 非空且长度4-20个字符，否则抛出异常
      */
     @NotBlank(message = "用户名不能为空")
     @Size(min = 4, max = 20, message = "用户名长度必须在4-20个字符之间")
@@ -45,7 +45,7 @@ public class RegisterDTO {
     /**
      * 登录密码
      * @security 需在前端加密后传输
-     * @constraint 非空且长度6-32个字符
+     * @constraint 非空且长度6-32个字符，否则抛出异常
      */
     @NotBlank(message = "密码不能为空")
     @Size(min = 6, max = 32, message = "密码长度必须在6-32个字符之间")
@@ -53,7 +53,7 @@ public class RegisterDTO {
 
     /**
      * 电子邮箱
-     * @constraint 非空且符合邮箱格式
+     * @constraint 非空且符合邮箱格式，否则抛出异常
      */
     @NotBlank(message = "邮箱不能为空")
     @Email(message = "邮箱格式不正确")
@@ -62,7 +62,7 @@ public class RegisterDTO {
     /**
      * 用户角色类型
      * @see UserType 枚举定义
-     * @constraint 必须指定角色类型
+     * @constraint 必须指定角色类型，否则抛出异常
      */
     @NotNull(message = "用户类型不能为空")
     private UserType userType;
