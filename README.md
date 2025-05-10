@@ -127,8 +127,6 @@ name,phone
     用`-`符号的纯文本列表，每项包含：
     - 功能点名称（如"教师/学生登录"）
     - 附加简短说明（如"验证身份并返回Token"）
-  * **关联引用**
-    单独区块列出，保持`@see`标签但增加中文说明
   * **元信息**
     集中放置作者、版本等基础信息（方便修改）
 
@@ -142,10 +140,6 @@ name,phone
  * - 令牌刷新：通过旧Token获取新Token
  * - 登出：使Token失效
  *
- * 关联引用：
- * @see AuthService 核心认证服务实现
- * @see TeacherLoginDTO 教师登录请求数据结构
- * @see StudentLoginDTO 学生登录请求数据结构
  *
  * 元信息：
  * @author YourName
@@ -224,14 +218,64 @@ public class TutorNotFoundException extends RuntimeException {
 | 更新资料 |   PUT    |     `/api/tutors/{id}`     |  全量更新导师资料  |
 | 删除导师 |  DELETE  |     `/api/tutors/{id}`     |    注销导师账号    |
 
-* 统一响应：返回实体类Response，eg.
+
+
+* 统一响应：返回Spring 框架中用于封装 HTTP 响应的核心类`ResponseEntity`
+
+|    组件    |                      作用                      |              示例值              |
+| :--------: | :--------------------------------------------: | :------------------------------: |
+| **状态码** |   表示请求的处理结果（成功、失败、重定向等）   |    `200 OK`, `404 Not Found`     |
+| **响应头** | 传递元数据（如内容类型、缓存控制、认证信息等） | `Content-Type: application/json` |
+| **响应体** |  返回给客户端的具体数据（JSON、XML、文本等）   |      `{ "name": "Alice" }`       |
+
+**常见状态码分类**
+
+| 状态码范围 |    类别    |             常用状态码             |
+| :--------: | :--------: | :--------------------------------: |
+|    2xx     |    成功    |      `200 OK`, `201 Created`       |
+|    3xx     |   重定向   |  `302 Found`, `304 Not Modified`   |
+|    4xx     | 客户端错误 | `400 Bad Request`, `404 Not Found` |
+|    5xx     | 服务器错误 |    `500 Internal Server Error`     |
+
+**常见的构造方式**
 
 ```java
-public class Response <T>{
-    private T data;
-    private boolean success;
-    private String errorMsg;
+// 仅状态码
+return new ResponseEntity<>(HttpStatus.OK);
+
+// 响应体 + 状态码
+User user = userService.getUser(id);
+return new ResponseEntity<>(user, HttpStatus.OK);
+
+// 响应体+响应头+状态码
+HttpHeaders headers = new HttpHeaders();
+headers.add("Custom-Header", "foo");
+return new ResponseEntity<>(user, headers, HttpStatus.OK);
 ```
+
+**静态工厂方法**
+
+```java
+// (1) 成功响应（HTTP 200）
+ResponseEntity.ok("操作成功");  // 参数是响应体
+
+// (2) 自定义状态码
+ResponseEntity.status(HttpStatus.CREATED).body(new User(1, "Alice"));
+
+// (3) 错误响应（HTTP 404）
+ResponseEntity.notFound().build();
+
+// (4) 重定向（HTTP 302）
+ResponseEntity.status(HttpStatus.FOUND)
+              .location(URI.create("/new-url"))
+              .build();
+```
+
+
+
+
+
+
 
 ### 5.数据库规范
 
