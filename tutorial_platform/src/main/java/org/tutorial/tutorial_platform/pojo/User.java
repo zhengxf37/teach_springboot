@@ -67,7 +67,7 @@ public class User {
     @CreationTimestamp
     @Column(name = "create_time", nullable = false, updatable = false)
     private Date createTime;
-    
+
 
 }
 

@@ -1,4 +1,4 @@
-package org.tutorial.tutorial_platform.service;
+package org.tutorial.tutorial_platform.service.Impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,6 +7,7 @@ import org.tutorial.tutorial_platform.dto.LoginDTO;
 import org.tutorial.tutorial_platform.dto.RegisterDTO;
 import org.tutorial.tutorial_platform.pojo.User;
 import org.tutorial.tutorial_platform.repository.UserRepository;
+import org.tutorial.tutorial_platform.service.AuthService;
 import org.tutorial.tutorial_platform.vo.AuthResponse;
 
 /**
