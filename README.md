@@ -4,29 +4,31 @@
 
 ### 需要工具：
 
-1最新的mysql和mysql workbench软件
+1. 最新的mysql和mysql workbench软件
 
-2idea
+   > 【手把手教你安装MySQL(最新版本安装)】https://www.bilibili.com/video/BV1jcabemEr7?vd_source=c911a68d69b8cda94014c7a000cfd2fe
+
+2. idea编辑器
 
 ### 运行：
 
 
 
-##### 1打开mysql，可能开机自启，或自己在命令行打开服务
+1打开mysql，可能开机自启，或自己在命令行打开服务
 
-##### 2打开workbench
+2打开workbench
 
 
 
 ![image-20250514214942054](./README.assets/image-20250514214942054.png)
 
-##### 3
+3
 
 ![image-20250514215342931](./README.assets/image-20250514215342931.png)
 
 代码
 
-```
+```mysql
 CREATE SCHEMA `tutorial_platform` ;
 CREATE TABLE `tutorial_platform`.`user` (
   `user_id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -64,7 +66,7 @@ CREATE TABLE `tutorial_platform`.`student` (
 
 
 
-##### 4运行后端
+4运行后端
 
 打开idea
 
