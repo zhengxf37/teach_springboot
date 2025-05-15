@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.tutorial.tutorial_platform.exception.TokenException;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -16,12 +17,14 @@ import java.util.Objects;
  * - Controller 方法本身抛出的异常
  * - Service 层或 Repository 层传递的异常
  * - 认证和授权相关的异常
+ * - 文件操作相关的异常
  *
  * 核心功能：
  * - 统一异常处理，包括：
  *   - 业务异常
  *   - 参数异常
  *   - Token异常
+ *   - 文件操作异常
  *
  * 元信息：
  * @author zxf
@@ -56,5 +59,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TokenException.class)
     public ResponseEntity<String> handleTokenException(TokenException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    // 处理文件操作异常
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> handleIOException(IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("文件操作失败：" + e.getMessage());
+    }
+
+    // 处理参数非法异常
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

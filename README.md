@@ -204,7 +204,7 @@ name,phone
     - 功能点名称（如"教师/学生登录"）
     - 附加简短说明（如"验证身份并返回Token"）
   * **元信息**
-    集中放置作者、版本等基础信息（方便修改）
+    作者
 
 ```java
 /**
@@ -219,8 +219,6 @@ name,phone
  *
  * 元信息：
  * @author YourName
- * @version 1.0
- * @since 2024-05-05 
  */
 @RestController
 @RequestMapping("/api/auth")

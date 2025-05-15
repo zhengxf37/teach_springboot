@@ -15,7 +15,7 @@ import org.tutorial.tutorial_platform.util.JwtInterceptor;
  * 核心功能：
  * - 拦截器管理：注册和管理请求拦截器
  * - 请求处理：配置请求处理相关的组件
- *
+ * 注：Sprint MVC会先拦截HTTP请求，在这里注册了拦截器以后，将会对请求进行token验证以及解析。
  * 元信息：
  * @author zxf
  */
@@ -26,7 +26,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtInterceptor)
+        registry.addInterceptor(jwtInterceptor)  // 注册自定义拦截器实例
                 .addPathPatterns("/api/**")  // 拦截所有API请求
                 .excludePathPatterns(        // 排除不需要认证的路径
                         "/api/auth/login",   // 登录接口
