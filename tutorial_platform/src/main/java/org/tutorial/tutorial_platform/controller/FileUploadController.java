@@ -40,7 +40,7 @@ public class FileUploadController {
         }
 
         try {
-            // 构建用户专属目录：../uploads/userId/
+            // 构建用户专属目录：../uploads/userId/，但不一定已经创建了文件夹
             File userDir = new File(uploadDir + File.separator + userId);
             if (!userDir.exists()) {
                 userDir.mkdirs();

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tutorial.tutorial_platform.dto.LoginDTO;
 import org.tutorial.tutorial_platform.dto.RegisterDTO;
 import org.tutorial.tutorial_platform.service.AuthService;
-import org.tutorial.tutorial_platform.vo.AuthResponse;
+import org.tutorial.tutorial_platform.vo.AuthResponseVO;
 /**
  * AuthController - 统一认证控制器
  *
@@ -22,8 +22,6 @@ import org.tutorial.tutorial_platform.vo.AuthResponse;
  *
  * 元信息：
  * @author zxf
- * @version 1.0
- * @since 2025-05-10
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -46,7 +44,7 @@ public class AuthController {
      * @throws RuntimeException 用户名/邮箱已存在（错误码400）
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterDTO registerDTO){
+    public ResponseEntity<AuthResponseVO> register(@Valid @RequestBody RegisterDTO registerDTO){
         return ResponseEntity.ok(authService.register(registerDTO));
     }
 
@@ -63,7 +61,7 @@ public class AuthController {
      * @throws RuntimeException 用户名/密码错误（错误码401）
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginDTO loginDTO){
+    public ResponseEntity<AuthResponseVO> login(@Valid @RequestBody LoginDTO loginDTO){
         return ResponseEntity.ok(authService.login(loginDTO));
     }
 

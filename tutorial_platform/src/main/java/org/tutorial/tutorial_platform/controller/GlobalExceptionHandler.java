@@ -5,25 +5,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.tutorial.tutorial_platform.exception.TokenException;
 
 import java.util.Objects;
 
 /**
  * GlobalExceptionHandler - 全局异常处理器
  *
- * 统一处理Controller 层（或其调用的下层组件）抛出的异常抛出的异常，包括：
+ * 统一处理Controller 层（或其调用的下层组件）抛出的异常，包括：
  * - Controller 方法本身抛出的异常
  * - Service 层或 Repository 层传递的异常
+ * - 认证和授权相关的异常
  *
  * 核心功能：
- * - 统一异常处理，包括
- * - 业务异常
- * - 参数异常
+ * - 统一异常处理，包括：
+ *   - 业务异常
+ *   - 参数异常
+ *   - Token异常
  *
  * 元信息：
  * @author zxf
- * @version 2.0
- * @since 2025-5-9
  */
 @RestControllerAdvice  // 标记该类为全局异常处理组件
 public class GlobalExceptionHandler {
@@ -45,5 +46,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST) // HTTP 400状态码
                 .body(errorMsg); // 响应体为校验失败信息
+    }
+
+    /**
+     * 处理Token相关异常
+     * @param e Token异常
+     * @return 错误响应
+     */
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<String> handleTokenException(TokenException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 }

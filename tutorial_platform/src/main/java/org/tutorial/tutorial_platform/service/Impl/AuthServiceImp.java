@@ -8,7 +8,8 @@ import org.tutorial.tutorial_platform.dto.RegisterDTO;
 import org.tutorial.tutorial_platform.pojo.User;
 import org.tutorial.tutorial_platform.repository.UserRepository;
 import org.tutorial.tutorial_platform.service.AuthService;
-import org.tutorial.tutorial_platform.vo.AuthResponse;
+import org.tutorial.tutorial_platform.util.JwtUtil;
+import org.tutorial.tutorial_platform.vo.AuthResponseVO;
 
 /**
  * AuthServiceImp - 认证服务实现类
@@ -20,11 +21,10 @@ import org.tutorial.tutorial_platform.vo.AuthResponse;
  * 依赖组件：
  * - UserRepository 用户数据访问接口
  * - PasswordEncoder 密码编码器
+ * - JwtUtil JWT工具类
  *
  * 元信息：
  * @author zxf
- * @version 1.0
- * @since 2025-05-10
  */
 @Service
 public class AuthServiceImp implements AuthService {
@@ -34,9 +34,11 @@ public class AuthServiceImp implements AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
-    public AuthResponse register(RegisterDTO registerDTO) {
+    public AuthResponseVO register(RegisterDTO registerDTO) {
         // 1. 唯一性校验
         if (userRepository.existsByUsername(registerDTO.getUsername())) {
             throw new RuntimeException("用户名已存在");
@@ -53,12 +55,17 @@ public class AuthServiceImp implements AuthService {
         user.setUserType(registerDTO.getUserType());
 
         // 3. 持久化操作
-        User savedUser = userRepository.save(user);  // 返回增强后的user(添加主键id和创建时间）
-        return new AuthResponse(savedUser);
+        User savedUser = userRepository.save(user);
+
+        // 4. 生成token
+        String token = jwtUtil.generateToken(savedUser);
+
+        // 5. 返回认证响应
+        return new AuthResponseVO(savedUser, token);
     }
 
     @Override
-    public AuthResponse login(LoginDTO loginDTO) {
+    public AuthResponseVO login(LoginDTO loginDTO) {
         // 1. 用户查询
         User user = userRepository.findByUsername(loginDTO.getUsername())
                 .orElseThrow(() -> new RuntimeException("用户名错误"));
@@ -67,7 +74,12 @@ public class AuthServiceImp implements AuthService {
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
-        return new AuthResponse(user);
+
+        // 3. 生成token,在客户端中如果先注册后登录，新token会覆盖旧token
+        String token = jwtUtil.generateToken(user);
+
+        // 4. 返回认证响应
+        return new AuthResponseVO(user, token);
     }
 }
 
