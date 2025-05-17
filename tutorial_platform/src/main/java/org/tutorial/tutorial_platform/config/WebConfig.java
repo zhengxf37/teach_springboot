@@ -8,7 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Web配置类
  * 功能：配置文件上传路径
- * 注：不确定正确性
  *
  * 元信息：
  * @author 周宏杰

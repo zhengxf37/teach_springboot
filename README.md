@@ -28,41 +28,7 @@
 
 代码
 
-```mysql
-CREATE SCHEMA `tutorial_platform` ;
-CREATE TABLE `tutorial_platform`.`user` (
-  `user_id` BIGINT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(50) NOT NULL,
-  `password` VARCHAR(255) NOT NULL,
-  `email` VARCHAR(255) NOT NULL,
-  `user_type` ENUM('TEACHER', 'STUDENT') NOT NULL,
-  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`user_id`),
-  UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE);
-  
-CREATE TABLE `tutorial_platform`.`student` (
-  `student_id` BIGINT NOT NULL AUTO_INCREMENT,
-  `user_id` BIGINT NOT NULL,
-  `gender` VARCHAR(10) NOT NULL,
-  `grade` VARCHAR(20) NOT NULL,
-  `subject` VARCHAR(30) NOT NULL,
-  `address` VARCHAR(60) NOT NULL,
-  PRIMARY KEY (`student_id`),
-  UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE);
-  
-  CREATE TABLE `tutorial_platform`.`teacher` (
-  `teacher_id` BIGINT NOT NULL AUTO_INCREMENT,
-  `user_id` BIGINT NOT NULL,
-  `gender` VARCHAR(10) NOT NULL,
-  `education` VARCHAR(10) NOT NULL,
-  `teach_grade` ENUM('小学', '初中', '高中') NOT NULL,
-  `subject` VARCHAR(30) NOT NULL,
-  `address` VARCHAR(60) NOT NULL,
-  PRIMARY KEY (`teacher_id`),
-  UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE);
-
-```
+已经放在同文件夹的数据库文档里，防止避免更新不及时
 
 
 

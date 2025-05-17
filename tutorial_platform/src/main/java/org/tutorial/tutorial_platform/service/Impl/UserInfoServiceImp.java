@@ -5,10 +5,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.tutorial.tutorial_platform.dto.StudentInfoUpdateDTO;
+import org.tutorial.tutorial_platform.dto.TeacherInfoUpdateDTO;
 import org.tutorial.tutorial_platform.dto.UserInfoUpdateDTO;
+import org.tutorial.tutorial_platform.pojo.Student;
+import org.tutorial.tutorial_platform.pojo.Teacher;
 import org.tutorial.tutorial_platform.pojo.User;
+import org.tutorial.tutorial_platform.pojo.UserType;
+import org.tutorial.tutorial_platform.repository.StudentRepository;
+import org.tutorial.tutorial_platform.repository.TeacherRepository;
 import org.tutorial.tutorial_platform.repository.UserRepository;
 import org.tutorial.tutorial_platform.service.UserInfoService;
+import org.tutorial.tutorial_platform.vo.StudentInfoVO;
+import org.tutorial.tutorial_platform.vo.TeacherInfoVO;
 import org.tutorial.tutorial_platform.vo.UserInfoVO;
 
 import java.io.File;
@@ -40,10 +49,15 @@ public class UserInfoServiceImp implements UserInfoService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    
+    private TeacherRepository teacherRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    
     @Value("${file.upload-dir}")
     private String uploadDir;
 
@@ -62,6 +76,56 @@ public class UserInfoServiceImp implements UserInfoService {
         // 2. 构建并返回视图对象
         return new UserInfoVO(user);
     }
+    /**
+     * 获取学生详细信息
+     * @param userId 用户ID
+     * @return 学生信息视图对象
+     * @throws RuntimeException 当学生不存在时抛出
+     */
+    @Override
+    public StudentInfoVO getStudentInfo(Long userId) {
+        // 1. 查询用户实体
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+
+        // 2. 验证用户是否为学生
+        if (user.getUserType() != UserType.STUDENT) {
+            throw new RuntimeException("该用户不是学生");
+        }
+
+        // 3. 查询学生实体
+        Student student = studentRepository.findByUserUserId(userId)
+                .orElseThrow(() -> new RuntimeException("学生信息不存在"));
+
+        // 4. 构建并返回视图对象
+        return new StudentInfoVO(student);
+    }
+
+    /**
+     * 获取教师详细信息
+     * @param userId 用户ID
+     * @return 教师信息视图对象
+     * @throws RuntimeException 当教师不存在时抛出
+     */
+    @Override
+    public TeacherInfoVO getTeacherInfo(Long userId) {
+        // 1. 查询用户实体
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+
+        // 2. 验证用户是否为教师
+        if (user.getUserType() != UserType.TEACHER) {
+            throw new RuntimeException("该用户不是教师");
+        }
+
+        // 3. 查询教师实体
+        Teacher teacher = teacherRepository.findByUserUserId(userId)
+                .orElseThrow(() -> new RuntimeException("教师信息不存在"));
+
+        // 4. 构建并返回视图对象
+        return new TeacherInfoVO(teacher);
+    }
+
 
     /**
      * 更新用户信息
@@ -78,29 +142,13 @@ public class UserInfoServiceImp implements UserInfoService {
         User user = userRepository.findById(userInfoUpdateDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
 
-        // 2. 验证密码
-        if (!passwordEncoder.matches(userInfoUpdateDTO.getPassword(), user.getPassword())) {
-            throw new RuntimeException("密码错误");
-        }
-
-        // 3. 检查用户名唯一性
-        if (!user.getUsername().equals(userInfoUpdateDTO.getUsername()) &&
-            userRepository.existsByUsername(userInfoUpdateDTO.getUsername())) {
-            throw new RuntimeException("用户名已存在");
-        }
-
-        // 4. 检查邮箱唯一性
-        if (!user.getEmail().equals(userInfoUpdateDTO.getEmail()) &&
-            userRepository.existsByEmail(userInfoUpdateDTO.getEmail())) {
-            throw new RuntimeException("邮箱已存在");
-        }
-
-        // 5. 更新用户信息
+        // 2. 更新用户信息
         user.setUsername(userInfoUpdateDTO.getUsername());
         user.setEmail(userInfoUpdateDTO.getEmail());
         user.setUserType(userInfoUpdateDTO.getUserType());
+        user.setPassword(passwordEncoder.encode(userInfoUpdateDTO.getPassword()));
 
-        // 6. 保存更新
+        // 3. 保存更新
         User updatedUser = userRepository.save(user);
         return new UserInfoVO(updatedUser);
     }
@@ -145,4 +193,95 @@ public class UserInfoServiceImp implements UserInfoService {
         // 6. 返回文件访问URL
         return "/api/file/avatars/" + filename;
     }
+    
+    /**
+     * 更新教师信息
+     * @param teacherInfoUpdateDTO 教师信息更新对象
+     * @return 更新后的教师信息视图对象
+     * @throws RuntimeException 当以下情况发生时抛出：
+     *                         - 教师不存在
+     *                         - 密码验证失败
+     *                         - 教师信息更新失败
+     */
+    @Override
+    public TeacherInfoVO updateTeacherInfo(TeacherInfoUpdateDTO teacherInfoUpdateDTO) {
+        // 1. 查询用户实体
+        User user = userRepository.findById(teacherInfoUpdateDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+    
+        // 2. 验证用户是否为教师
+        if (user.getUserType() != UserType.TEACHER) {
+            throw new RuntimeException("该用户不是教师");
+        }
+    
+        // 3. 获取或创建教师实体
+        Teacher teacher = teacherRepository.findByUserUserId(user.getUserId())
+                .orElseGet(() -> {
+                    Teacher newTeacher = new Teacher();
+                    newTeacher.setUser(user);
+                    return newTeacher;
+                });
+    
+        // 4. 更新教师信息
+        teacher.setGender(teacherInfoUpdateDTO.getGender());
+        teacher.setEducation(teacherInfoUpdateDTO.getEducation());
+        teacher.setTeachGrade(teacherInfoUpdateDTO.getTeachGrade());
+        teacher.setSubject(teacherInfoUpdateDTO.getSubject());
+        teacher.setAddress(teacherInfoUpdateDTO.getAddress());
+    
+        // 5. 保存教师信息
+        teacherRepository.save(teacher);
+
+        TeacherInfoVO teacherInfoVO = new TeacherInfoVO();
+        teacherInfoVO.setGender(teacher.getGender());
+        teacherInfoVO.setEducation(teacher.getEducation());
+        teacherInfoVO.setTeachGrade(teacher.getTeachGrade());
+        teacherInfoVO.setSubject(teacher.getSubject());
+        // 6. 返回教师信息视图对象
+        return new TeacherInfoVO(teacherInfoVO);
+    }
+
+    /**
+     * 更新学生信息
+     * @param studentInfoUpdateDTO 包含学生信息更新的数据传输对象
+     *                            - 性别
+     *                            - 年级
+     *                            - 科目
+     *                            - 地址
+     * @return
+     * @throws RuntimeException 如果更新失败，则抛出运行时异常
+     */
+    @Override
+    public StudentInfoVO updateStudentInfo(StudentInfoUpdateDTO studentInfoUpdateDTO) {
+        // 1. 查询用户实体
+        User user = userRepository.findById(studentInfoUpdateDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+
+        // 2. 验证用户是否为学生
+        if (user.getUserType() != UserType.STUDENT) {
+            throw new RuntimeException("该用户不是学生");
+        }
+
+        // 3. 获取或创建学生实体
+        Student student = studentRepository.findByUserUserId(user.getUserId())
+                .orElseGet(() -> {
+                    Student newStudent = new Student();
+                    newStudent.setUser(user);
+                    return newStudent;
+                });
+
+        // 4. 更新学生信息
+        student.setGender(studentInfoUpdateDTO.getGender());
+        student.setGrade(studentInfoUpdateDTO.getGrade());
+        student.setSubject(studentInfoUpdateDTO.getSubject());
+        student.setAddress(studentInfoUpdateDTO.getAddress());
+
+        // 5. 保存学生信息
+        studentRepository.save(student);
+
+        // 6. 构建并返回视图对象
+        return new StudentInfoVO(student);
+    }
+
+
 }

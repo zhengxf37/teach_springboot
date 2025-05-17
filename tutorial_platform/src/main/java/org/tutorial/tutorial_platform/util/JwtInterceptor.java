@@ -36,13 +36,12 @@ public class JwtInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 1. 获取Authorization头
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String token = request.getHeader("token");
+        if (token == null) {
             throw new TokenException("未提供有效的认证令牌!");  // 合法形式是"Bearer <token>"
         }
 
         // 2. 提取并验证Token
-        String token = authHeader.substring(7);
         String username = jwtUtil.extractUsername(token);
         if (!jwtUtil.validateToken(token, username)) {
             throw new TokenException("认证令牌已失效!"); // 直接抛出
