@@ -1,52 +1,46 @@
 package org.tutorial.tutorial_platform.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.tutorial.tutorial_platform.pojo.Education;
+import org.tutorial.tutorial_platform.pojo.Gender;
+import org.tutorial.tutorial_platform.pojo.TeachGrade;
 
-/**
- * TeacherUpdateDTO - 教师信息更新数据传输对象
- *
- * 封装教师用户更新时提交的数据，包括：
- * - 性别
- * - 学历
- * - 教学年级
- * - 科目
- * @author zhj
- */
 @Data
 public class TeacherInfoUpdateDTO {
-    /**
-     * 用户ID
-     */
 
     private Long userId;
 
-    /**
-     * 性别
-     */
-    @NotBlank(message = "性别不能为空")
-    private String gender;
+    @NotNull(message = "性别不能为空")
+    private Gender gender;
 
-    /**
-     * 学历
-     */
-    @NotBlank(message = "学历不能为空")
-    private String education;
+    @NotNull(message = "学历不能为空")
+    private Education education;
 
-    /**
-     * 教学年级（小学/初中/高中）
-     */
-    @NotBlank(message = "教学年级不能为空")
-    private String teachGrade;
+    @NotNull(message = "教学年级不能为空")
+    private TeachGrade teachGrade;
 
-    /**
-     * 科目
-     */
     @NotBlank(message = "科目不能为空")
     private String subject;
-    /**
-     * 地址
-     */
+
     @NotBlank(message = "地址不能为空")
     private String address;
+
+    @NotBlank(message = "手机号码不能为空")
+    private String phone;
+
+    @NotNull(message = "教学经验不能为空")
+    private Integer experience;
+
+    @NotNull(message = "评分不能为空")
+    private Double score;
+
+    @NotBlank(message = "兴趣不能为空")
+    private String hobby;
+
+    @NotBlank(message = "毕业学校不能为空")
+    private String school;
+
+    @NotBlank(message = "其他信息不能为空")
+    private String addition;
 }

@@ -2,10 +2,8 @@ package org.tutorial.tutorial_platform.pojo;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
 
-/**
- * 教师实体类，对应数据库表 teacher
- */
 @Entity
 @Table(name = "teacher")
 @Data
@@ -20,17 +18,39 @@ public class Teacher {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "gender", nullable = false, length = 10)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", nullable = false)
+    private Gender gender;
 
-    @Column(name = "education", nullable = false, length = 10)
-    private String education;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "education", nullable = false)
+    private Education education;
 
-    @Column(name = "teach_grade", nullable = false, length = 10)
-    private String teachGrade; // 可选值："小学" / "初中" / "高中"
+    @Enumerated(EnumType.STRING)
+    @Column(name = "teach_grade", nullable = false)
+    private TeachGrade teachGrade;
 
     @Column(name = "subject", nullable = false, length = 30)
     private String subject;
-    @Column(name = "address", nullable = false, length = 255)
+
+    @Column(name = "address", nullable = false, length = 100)
     private String address;
+
+    @Column(name = "phone", nullable = false, length = 11)
+    private String phone;
+
+    @Column(name = "experience", nullable = false)
+    private Integer experience;
+
+    @Column(name = "score", precision = 5, scale = 2)
+    private BigDecimal score;
+
+    @Column(name = "hobby", nullable = false, length = 255)
+    private String hobby;
+
+    @Column(name = "school", nullable = false, length = 100)
+    private String school;
+
+    @Column(name = "addition", columnDefinition = "TEXT NOT NULL")
+    private String addition;
 }

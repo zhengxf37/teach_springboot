@@ -22,6 +22,7 @@ import org.tutorial.tutorial_platform.vo.UserInfoVO;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -205,41 +206,37 @@ public class UserInfoServiceImp implements UserInfoService {
      */
     @Override
     public TeacherInfoVO updateTeacherInfo(TeacherInfoUpdateDTO teacherInfoUpdateDTO) {
-        // 1. 查询用户实体
         User user = userRepository.findById(teacherInfoUpdateDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
-    
-        // 2. 验证用户是否为教师
+
         if (user.getUserType() != UserType.TEACHER) {
             throw new RuntimeException("该用户不是教师");
         }
-    
-        // 3. 获取或创建教师实体
+
         Teacher teacher = teacherRepository.findByUserUserId(user.getUserId())
                 .orElseGet(() -> {
                     Teacher newTeacher = new Teacher();
                     newTeacher.setUser(user);
                     return newTeacher;
                 });
-    
-        // 4. 更新教师信息
+
         teacher.setGender(teacherInfoUpdateDTO.getGender());
         teacher.setEducation(teacherInfoUpdateDTO.getEducation());
         teacher.setTeachGrade(teacherInfoUpdateDTO.getTeachGrade());
         teacher.setSubject(teacherInfoUpdateDTO.getSubject());
         teacher.setAddress(teacherInfoUpdateDTO.getAddress());
-    
-        // 5. 保存教师信息
+        teacher.setPhone(teacherInfoUpdateDTO.getPhone());
+        teacher.setExperience(teacherInfoUpdateDTO.getExperience());
+        teacher.setScore(BigDecimal.valueOf(teacherInfoUpdateDTO.getScore()));
+        teacher.setHobby(teacherInfoUpdateDTO.getHobby());
+        teacher.setSchool(teacherInfoUpdateDTO.getSchool());
+        teacher.setAddition(teacherInfoUpdateDTO.getAddition());
+
         teacherRepository.save(teacher);
 
-        TeacherInfoVO teacherInfoVO = new TeacherInfoVO();
-        teacherInfoVO.setGender(teacher.getGender());
-        teacherInfoVO.setEducation(teacher.getEducation());
-        teacherInfoVO.setTeachGrade(teacher.getTeachGrade());
-        teacherInfoVO.setSubject(teacher.getSubject());
-        // 6. 返回教师信息视图对象
-        return new TeacherInfoVO(teacherInfoVO);
+        return new TeacherInfoVO(teacher);
     }
+
 
     /**
      * 更新学生信息
@@ -253,16 +250,13 @@ public class UserInfoServiceImp implements UserInfoService {
      */
     @Override
     public StudentInfoVO updateStudentInfo(StudentInfoUpdateDTO studentInfoUpdateDTO) {
-        // 1. 查询用户实体
         User user = userRepository.findById(studentInfoUpdateDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
 
-        // 2. 验证用户是否为学生
         if (user.getUserType() != UserType.STUDENT) {
             throw new RuntimeException("该用户不是学生");
         }
 
-        // 3. 获取或创建学生实体
         Student student = studentRepository.findByUserUserId(user.getUserId())
                 .orElseGet(() -> {
                     Student newStudent = new Student();
@@ -270,18 +264,21 @@ public class UserInfoServiceImp implements UserInfoService {
                     return newStudent;
                 });
 
-        // 4. 更新学生信息
         student.setGender(studentInfoUpdateDTO.getGender());
         student.setGrade(studentInfoUpdateDTO.getGrade());
         student.setSubject(studentInfoUpdateDTO.getSubject());
         student.setAddress(studentInfoUpdateDTO.getAddress());
+        student.setPhone(studentInfoUpdateDTO.getPhone());
+        student.setScore(BigDecimal.valueOf(studentInfoUpdateDTO.getScore()));
+        student.setHobby(studentInfoUpdateDTO.getHobby());
+        student.setGoal(studentInfoUpdateDTO.getGoal());
+        student.setAddition(studentInfoUpdateDTO.getAddition());
 
-        // 5. 保存学生信息
         studentRepository.save(student);
 
-        // 6. 构建并返回视图对象
         return new StudentInfoVO(student);
     }
+
 
 
 }
