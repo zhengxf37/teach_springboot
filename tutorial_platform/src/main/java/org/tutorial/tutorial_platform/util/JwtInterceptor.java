@@ -35,10 +35,10 @@ public class JwtInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        // 1. 获取Authorization头
+        // 1. 获取Header中名为token的字段值
         String token = request.getHeader("token");
         if (token == null) {
-            throw new TokenException("未提供有效的认证令牌!");  // 合法形式是"Bearer <token>"
+            throw new TokenException("未提供有效的认证令牌!");  // 合法形式是"token"
         }
 
         // 2. 提取并验证Token
