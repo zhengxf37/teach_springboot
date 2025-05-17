@@ -38,7 +38,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         // 1. 获取Authorization头
         String token = request.getHeader("token");
         if (token == null) {
-            throw new TokenException("未提供有效的认证令牌!");  // 合法形式是"Bearer <token>"
+            throw new TokenException("未提供有效的认证令牌!");  // 合法形式是"{token}"
         }
 
         // 2. 提取并验证Token

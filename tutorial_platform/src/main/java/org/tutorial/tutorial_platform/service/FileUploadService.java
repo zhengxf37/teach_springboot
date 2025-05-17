@@ -37,4 +37,14 @@ public interface FileUploadService {
      * @return 文件访问URL列表
      */
     List<String> listUserFiles(Long userId);
+    /**
+     * 上传用户头像
+     * @param userId 用户ID
+     * @param file 头像文件
+     * @return 文件访问URL
+     * @throws IOException 文件操作异常
+     * @throws IllegalArgumentException 当文件类型不正确时抛出
+     */
+    String uploadAvatar(Long userId, MultipartFile file) throws IOException;
+
 }

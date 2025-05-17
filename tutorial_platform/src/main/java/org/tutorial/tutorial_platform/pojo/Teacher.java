@@ -4,6 +4,15 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 
+/**
+ * Teacher -老师实体类
+ * 和数据库对应
+ *
+ * 元信息：
+ * @author zhj
+ * @version 1.0
+ * @since 2025-05-17
+ */
 @Entity
 @Table(name = "teacher")
 @Data

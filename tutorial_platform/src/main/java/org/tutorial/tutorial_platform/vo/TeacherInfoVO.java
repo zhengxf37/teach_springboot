@@ -7,7 +7,15 @@ import org.tutorial.tutorial_platform.pojo.TeachGrade;
 import org.tutorial.tutorial_platform.pojo.Teacher;
 
 import java.math.BigDecimal;
-
+/**
+ * 老师特色信息返回类
+ * 和数据库对应
+ *
+ * 元信息：
+ * @author zhj
+ * @version 1.0
+ * @since 2025-05-17
+ */
 @Data
 public class TeacherInfoVO {
     private Gender gender;

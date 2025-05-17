@@ -58,9 +58,6 @@ public class UserInfoServiceImp implements UserInfoService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
-    @Value("${file.upload-dir}")
-    private String uploadDir;
 
     /**
      * 获取用户详细信息
@@ -154,46 +151,6 @@ public class UserInfoServiceImp implements UserInfoService {
         return new UserInfoVO(updatedUser);
     }
 
-    /**
-     * 上传用户头像
-     * @param userId 用户ID
-     * @param file 头像文件
-     * @return 头像访问URL
-     * @throws IOException 文件操作异常
-     * @throws IllegalArgumentException 当文件类型不正确时抛出
-     */
-    @Override
-    public String uploadAvatar(Long userId, MultipartFile file) throws IOException {
-        // 1. 验证用户是否存在
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("用户不存在");
-        }
-
-        // 2. 验证文件类型
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("只能上传图片文件");
-        }
-
-        // 3. 生成唯一文件名
-        String originalFilename = file.getOriginalFilename();
-        String extension = originalFilename != null ? 
-            originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
-        String filename = "avatar_" + userId + "_" + UUID.randomUUID() + extension;
-
-        // 4. 确保目录存在
-        File uploadDirFile = new File(uploadDir + "/avatars");
-        if (!uploadDirFile.exists()) {
-            uploadDirFile.mkdirs();
-        }
-
-        // 5. 保存文件
-        File destFile = new File(uploadDirFile, filename);
-        file.transferTo(destFile);
-
-        // 6. 返回文件访问URL
-        return "/api/file/avatars/" + filename;
-    }
     
     /**
      * 更新教师信息

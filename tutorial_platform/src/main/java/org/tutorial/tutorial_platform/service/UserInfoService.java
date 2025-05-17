@@ -66,16 +66,6 @@ public interface UserInfoService {
     UserInfoVO updateUserInfo(UserInfoUpdateDTO userInfoUpdateDTO);
 
     /**
-     * 上传用户头像
-     * @param userId 用户ID
-     * @param file 头像文件
-     * @return 头像访问URL
-     * @throws IOException 文件操作异常
-     * @throws IllegalArgumentException 当文件类型不正确时抛出
-     */
-    String uploadAvatar(Long userId, MultipartFile file) throws IOException;
-
-    /**
      * 更新教师信息
      * @param teacherInfoUpdateDTO 教师信息更新对象，包含：
      *                            - 教师ID

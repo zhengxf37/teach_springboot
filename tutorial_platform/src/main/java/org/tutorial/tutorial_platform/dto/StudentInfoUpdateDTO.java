@@ -3,7 +3,11 @@ package org.tutorial.tutorial_platform.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.tutorial.tutorial_platform.pojo.Gender;
-
+/**
+ * 教师信息更新DTO
+ * 和数据库对应
+ * @author ：zhj
+ */
 @Data
 public class StudentInfoUpdateDTO {
 

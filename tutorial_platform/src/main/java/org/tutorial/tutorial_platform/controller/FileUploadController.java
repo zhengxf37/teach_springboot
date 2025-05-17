@@ -40,7 +40,7 @@ public class FileUploadController {
      * @return 文件访问URL列表
      * @throws IOException 文件操作异常
      */
-    @PostMapping("/upload")
+    @PostMapping("/uploadfile")
     public ResponseEntity<List<String>> uploadFiles(
             HttpServletRequest request,
             @RequestParam("files") MultipartFile[] files) throws IOException {
@@ -51,6 +51,22 @@ public class FileUploadController {
         return ResponseEntity.ok(fileUrls);
     }
 
+    /**
+     * 上传头像
+     * @param request
+     * @return 文件访问URL
+     * @throws IOException 文件上传失败
+     */
+    @PostMapping("/uploadavatar")
+    public ResponseEntity<String> uploadAvatar(
+            HttpServletRequest request,
+            @RequestParam("file") MultipartFile file
+            ) throws IOException {
+        // 从token中获取用户ID
+        Long userId = (Long) request.getAttribute("userId");
+        String avatarUrl = fileUploadService.uploadAvatar(userId, file);
+        return ResponseEntity.ok(avatarUrl);
+    }
     /**
      * 获取用户文件列表接口
      * @param request HTTP请求对象，包含token中的用户信息
@@ -64,4 +80,5 @@ public class FileUploadController {
         List<String> fileUrls = fileUploadService.listUserFiles(userId);
         return ResponseEntity.ok(fileUrls);
     }
+
 }

@@ -6,6 +6,11 @@ import org.tutorial.tutorial_platform.pojo.Education;
 import org.tutorial.tutorial_platform.pojo.Gender;
 import org.tutorial.tutorial_platform.pojo.TeachGrade;
 
+/**
+ * 教师信息更新DTO
+ * 和数据库对应
+ * @author ：zhj
+ */
 @Data
 public class TeacherInfoUpdateDTO {
 

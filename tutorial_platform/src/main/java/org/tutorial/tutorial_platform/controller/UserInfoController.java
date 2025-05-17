@@ -130,21 +130,4 @@ public class UserInfoController {
     }
 
 
-    /**
-     * 上传用户头像接口
-     * @param request HTTP请求对象，包含token中的用户信息
-     * @param file 头像文件
-     * @return 头像访问URL
-     * @throws IOException 文件操作异常
-     */
-    @PostMapping("/avatar")
-    public ResponseEntity<String> uploadAvatar(
-            HttpServletRequest request,
-            @RequestParam("file") MultipartFile file) throws IOException {
-        // 从token中获取用户ID
-        Long userId = (Long) request.getAttribute("userId");
-        // 调用service层处理头像上传
-        String avatarUrl = userService.uploadAvatar(userId, file);
-        return ResponseEntity.ok(avatarUrl);
-    }
 }

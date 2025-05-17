@@ -1,8 +1,10 @@
 package org.tutorial.tutorial_platform.service.Impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.tutorial.tutorial_platform.repository.UserRepository;
 import org.tutorial.tutorial_platform.service.FileUploadService;
 
 import java.io.File;
@@ -31,6 +33,8 @@ import java.util.UUID;
  */
 @Service
 public class FileUploadServiceImp implements FileUploadService {
+    @Autowired
+    private UserRepository userRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -108,4 +112,54 @@ public class FileUploadServiceImp implements FileUploadService {
 
         return fileUrls;
     }
+
+    /**
+     * 上传头像
+     * @param userId 用户ID
+     * @param file 头像文件
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public String uploadAvatar(Long userId, MultipartFile file) throws IOException {
+        // 1. 验证用户是否存在
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        // 2. 验证文件是否为空
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("文件不能为空");
+        }
+
+        // 3. 检查文件类型是否为图片
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null ||
+                !(originalFilename.endsWith(".jpg") ||
+                originalFilename.endsWith(".jpeg") ||
+                originalFilename.endsWith(".png"))) {
+            throw new IllegalArgumentException("仅支持 jpg/png/jpeg 格式的图片");
+        }
+
+        // 4. 获取文件扩展名
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        // 5. 生成唯一文件名
+        String filename = "avatar_" + userId + extension;
+
+        // 6. 构建头像目录路径
+        File avatarDir = new File(uploadDir + "/avatars");
+        if (!avatarDir.exists()) {
+            avatarDir.mkdirs();
+        }
+
+        // 7. 保存文件
+        File dest = new File(avatarDir.getAbsolutePath() + File.separator + filename);
+        file.transferTo(dest);
+
+        // 8. 返回访问路径
+        return "/uploads/avatars/" + filename;
+
+    }
+
 } 
