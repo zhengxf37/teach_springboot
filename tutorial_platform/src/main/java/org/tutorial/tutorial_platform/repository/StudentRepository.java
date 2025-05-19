@@ -2,7 +2,7 @@ package org.tutorial.tutorial_platform.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.tutorial.tutorial_platform.pojo.Student;
-
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,6 +16,12 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
      * @return 学生信息
      */
     Optional<Student> findByUserUserId(Long userId);
-
+    /**
+     * 根据科目和年级查询学生列表
+     * @param subject 科目名称
+     * @param grade 年级
+     * @return 学生列表
+     */
+    List<Student> findAllBySubjectAndGrade(String subject, String grade);
 
 }
