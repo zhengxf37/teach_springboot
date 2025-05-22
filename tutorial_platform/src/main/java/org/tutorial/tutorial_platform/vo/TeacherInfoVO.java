@@ -29,6 +29,7 @@ public class TeacherInfoVO {
     private String hobby;
     private String school;
     private String addition;
+    private String name;
 
     public TeacherInfoVO(Teacher teacher) {
         this.gender = teacher.getGender();
@@ -42,6 +43,7 @@ public class TeacherInfoVO {
         this.hobby = teacher.getHobby();
         this.school = teacher.getSchool();
         this.addition = teacher.getAddition();
+        this.name = teacher.getName();
     }
 
     public TeacherInfoVO() {}

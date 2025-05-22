@@ -27,6 +27,9 @@ public class Teacher {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, unique = true)
     private User user;
 
+    @Column(name = "name", nullable = false, length = 20)
+    private String name;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private Gender gender;

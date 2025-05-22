@@ -25,6 +25,7 @@ public class StudentInfoVO {
     private String hobby;
     private String goal;
     private String addition;
+    private String name;
 
     public StudentInfoVO(Student student) {
         this.gender = student.getGender();
@@ -36,6 +37,7 @@ public class StudentInfoVO {
         this.hobby = student.getHobby();
         this.goal = student.getGoal();
         this.addition = student.getAddition();
+        this.name = student.getName();
     }
 
     public StudentInfoVO() {}

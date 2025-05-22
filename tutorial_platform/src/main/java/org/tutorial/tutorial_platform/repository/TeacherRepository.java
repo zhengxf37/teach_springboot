@@ -24,4 +24,9 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
      * @return 教师列表
      */
     List<Teacher> findAllBySubjectAndTeachGrade(String subject, String teachGrade);
+
+    /**
+     * 查询用户Id是否在老师表中
+     */
+    boolean existsByUserUserId(Long userId);
 }

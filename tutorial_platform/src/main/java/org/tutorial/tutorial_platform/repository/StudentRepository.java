@@ -24,4 +24,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
      */
     List<Student> findAllBySubjectAndGrade(String subject, String grade);
 
+    /**
+     * 查询用户Id是否在学生表中
+     */
+    boolean existsByUserUserId(Long userId);
 }
