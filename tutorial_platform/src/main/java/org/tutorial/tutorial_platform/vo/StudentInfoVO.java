@@ -16,6 +16,7 @@ import java.math.BigDecimal;
  */
 @Data
 public class StudentInfoVO {
+    private String name;
     private Gender gender;
     private String grade;
     private String subject;
@@ -25,9 +26,9 @@ public class StudentInfoVO {
     private String hobby;
     private String goal;
     private String addition;
-    private String name;
 
     public StudentInfoVO(Student student) {
+        this.name = student.getName();
         this.gender = student.getGender();
         this.grade = student.getGrade();
         this.subject = student.getSubject();
@@ -37,7 +38,6 @@ public class StudentInfoVO {
         this.hobby = student.getHobby();
         this.goal = student.getGoal();
         this.addition = student.getAddition();
-        this.name = student.getName();
     }
 
     public StudentInfoVO() {}

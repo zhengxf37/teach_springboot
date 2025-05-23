@@ -177,6 +177,7 @@ public class UserInfoServiceImp implements UserInfoService {
                     return newTeacher;
                 });
 
+        teacher.setName(teacherInfoUpdateDTO.getName());
         teacher.setGender(teacherInfoUpdateDTO.getGender());
         teacher.setEducation(teacherInfoUpdateDTO.getEducation());
         teacher.setTeachGrade(teacherInfoUpdateDTO.getTeachGrade());
@@ -221,6 +222,7 @@ public class UserInfoServiceImp implements UserInfoService {
                     return newStudent;
                 });
 
+        student.setName(studentInfoUpdateDTO.getName());
         student.setGender(studentInfoUpdateDTO.getGender());
         student.setGrade(studentInfoUpdateDTO.getGrade());
         student.setSubject(studentInfoUpdateDTO.getSubject());
