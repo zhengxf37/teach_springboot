@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.tutorial.tutorial_platform.dto.LoginDTO;
 import org.tutorial.tutorial_platform.dto.RegisterDTO;
 import org.tutorial.tutorial_platform.pojo.User;
+import org.tutorial.tutorial_platform.pojo.UserTotalUnread;
 import org.tutorial.tutorial_platform.repository.UserRepository;
+import org.tutorial.tutorial_platform.repository.UserTotalUnreadRepository;
 import org.tutorial.tutorial_platform.service.AuthService;
 import org.tutorial.tutorial_platform.util.JwtUtil;
 import org.tutorial.tutorial_platform.vo.AuthResponseVO;
@@ -37,6 +39,9 @@ public class AuthServiceImp implements AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private UserTotalUnreadRepository userTotalUnreadRepository;
+
     @Override
     public AuthResponseVO register(RegisterDTO registerDTO) {
         // 1. 唯一性校验
@@ -60,7 +65,13 @@ public class AuthServiceImp implements AuthService {
         // 4. 生成token
         String token = jwtUtil.generateToken(savedUser);
 
-        // 5. 返回认证响应
+        // 5. 在UserUnreadSum表中注册用户
+        UserTotalUnread userTotalUnread = new UserTotalUnread();
+        userTotalUnread.setUserId(savedUser.getUserId());
+        userTotalUnread.setTotalUnread(0);
+        userTotalUnreadRepository.save(userTotalUnread);
+
+        // 6. 返回认证响应
         return new AuthResponseVO(savedUser, token);
     }
 
