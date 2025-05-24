@@ -114,7 +114,7 @@ public class UserInfoController {
     }
 
     /**
-     * 修改学生信息
+     * 修改学生个人信息接口
      * @param request
      * @param studentInfoUpdateDTO
      * @return
