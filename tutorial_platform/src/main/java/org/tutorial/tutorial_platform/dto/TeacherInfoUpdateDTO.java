@@ -16,6 +16,10 @@ public class TeacherInfoUpdateDTO {
 
     private Long userId;
 
+    @NotBlank(message = "姓名不能为空")
+    @Size(max = 20, message = "姓名长度不能超过20个字符")
+    private String name;
+
     @NotNull(message = "性别不能为空")
     private Gender gender;
 
@@ -49,7 +53,4 @@ public class TeacherInfoUpdateDTO {
     @NotBlank(message = "其他信息不能为空")
     private String addition;
 
-    @NotBlank(message = "姓名不能为空")
-    @Size(max = 20, message = "姓名长度不能超过20个字符")
-    private String name;
 }
