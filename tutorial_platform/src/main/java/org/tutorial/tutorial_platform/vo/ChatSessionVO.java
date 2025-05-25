@@ -14,8 +14,8 @@ public class ChatSessionVO {
     private Long sessionId;
     private Long teacherUserId;
     private Long studentUserId;
-    private String studentName;
     private String teacherName;
+    private String studentName;
     private LocalDateTime createTime;
     private String lastMessageContent;
     private LocalDateTime lastMessageTime;
