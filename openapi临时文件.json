@@ -1,0 +1,935 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "API Documentation",
+    "version" : "1.0"
+  },
+  "paths" : {
+    "/api/auth/register" : {
+      "post" : {
+        "summary" : "用户注册接口",
+        "description" : "用户注册接口",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "email", "password", "userType", "username" ],
+                "type" : "object",
+                "properties" : {
+                  "username" : {
+                    "maxLength" : 20,
+                    "minLength" : 4,
+                    "type" : "string",
+                    "description" : "用户名"
+                  },
+                  "password" : {
+                    "maxLength" : 32,
+                    "minLength" : 6,
+                    "type" : "string",
+                    "description" : "登录密码"
+                  },
+                  "email" : {
+                    "type" : "string",
+                    "description" : "电子邮箱",
+                    "format" : "email"
+                  },
+                  "userType" : {
+                    "type" : "string",
+                    "description" : "{TEACHER=TEACHER, STUDENT=STUDENT}",
+                    "enum" : [ "TEACHER", "STUDENT" ]
+                  }
+                },
+                "description" : "接收注册请求参数，包含：\n                    - username 用户名（4-20字符）\n                    - password 密码（6-32字符）\n                    - email 邮箱地址\n                    - userType 用户类型（TEACHER/STUDENT）"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "认证响应，包含：\n         - userId 用户唯一标识\n         - username 用户名\n         - userType 用户类型",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "userId" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "username" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "userType" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "token" : {
+                      "type" : "string",
+                      "description" : ""
+                    }
+                  },
+                  "description" : "认证响应，包含：\n         - userId 用户唯一标识\n         - username 用户名\n         - userType 用户类型"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login" : {
+      "post" : {
+        "summary" : "用户登录接口",
+        "description" : "用户登录接口",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "password", "username" ],
+                "type" : "object",
+                "properties" : {
+                  "username" : {
+                    "type" : "string",
+                    "description" : "登录用户名"
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "description" : "登录密码"
+                  }
+                },
+                "description" : "登录请求参数，包含：\n                 - username 用户名\n                 - password 密码"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "认证响应，包含：\n         - userId 用户唯一标识\n         - username 用户名\n         - userType 用户类型",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "userId" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "username" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "userType" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "token" : {
+                      "type" : "string",
+                      "description" : ""
+                    }
+                  },
+                  "description" : "认证响应，包含：\n         - userId 用户唯一标识\n         - username 用户名\n         - userType 用户类型"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/match/teachers" : {
+      "post" : {
+        "summary" : "学生查找合适的老师",
+        "description" : "学生查找合适的老师",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "grade", "subject" ],
+                "type" : "object",
+                "properties" : {
+                  "subject" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "grade" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "minScore" : {
+                    "type" : "number",
+                    "description" : "默认最低评分",
+                    "default" : 4.5
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "userId" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "username" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "gender" : {
+                        "type" : "string",
+                        "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                        "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                      },
+                      "education" : {
+                        "type" : "string",
+                        "description" : "{BACHELOR=BACHELOR, MASTER=MASTER, DOCTOR=DOCTOR, OTHER=OTHER}",
+                        "enum" : [ "BACHELOR", "MASTER", "DOCTOR", "OTHER" ]
+                      },
+                      "teachGrade" : {
+                        "type" : "string",
+                        "description" : "{小学=小学, 初中=初中, 高中=高中}",
+                        "enum" : [ "小学", "初中", "高中" ]
+                      },
+                      "subject" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "score" : {
+                        "type" : "number",
+                        "description" : ""
+                      },
+                      "experience" : {
+                        "type" : "integer",
+                        "description" : ""
+                      },
+                      "hobby" : {
+                        "type" : "string",
+                        "description" : ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/match/students" : {
+      "post" : {
+        "summary" : "教师查找合适的学生",
+        "description" : "教师查找合适的学生",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "grade", "subject" ],
+                "type" : "object",
+                "properties" : {
+                  "subject" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "grade" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "minScore" : {
+                    "type" : "number",
+                    "description" : "默认最低成绩",
+                    "default" : 80.0
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "userId" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "username" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "gender" : {
+                        "type" : "string",
+                        "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                        "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                      },
+                      "grade" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "subject" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "score" : {
+                        "type" : "number",
+                        "description" : ""
+                      },
+                      "hobby" : {
+                        "type" : "string",
+                        "description" : ""
+                      },
+                      "goal" : {
+                        "type" : "string",
+                        "description" : ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/info/user" : {
+      "get" : {
+        "summary" : "查询用户个人信息接口",
+        "description" : "查询用户个人信息接口",
+        "responses" : {
+          "200" : {
+            "description" : "用户信息响应对象",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "userId" : {
+                      "type" : "string",
+                      "description" : "用户唯一标识"
+                    },
+                    "username" : {
+                      "type" : "string",
+                      "description" : "登录用户名"
+                    },
+                    "email" : {
+                      "type" : "string",
+                      "description" : "电子邮箱"
+                    },
+                    "userType" : {
+                      "type" : "string",
+                      "description" : "{TEACHER=TEACHER, STUDENT=STUDENT}",
+                      "enum" : [ "TEACHER", "STUDENT" ]
+                    },
+                    "createTime" : {
+                      "type" : "string",
+                      "description" : "注册时间或创建时间"
+                    }
+                  },
+                  "description" : "用户信息响应对象"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/info/student" : {
+      "get" : {
+        "summary" : "获取学生信息",
+        "description" : "获取学生信息",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "gender" : {
+                      "type" : "string",
+                      "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                      "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                    },
+                    "grade" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "subject" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "address" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "phone" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "score" : {
+                      "type" : "number",
+                      "description" : ""
+                    },
+                    "hobby" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "goal" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "addition" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "name" : {
+                      "type" : "string",
+                      "description" : ""
+                    }
+                  },
+                  "description" : ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/info/teacher" : {
+      "get" : {
+        "summary" : "获取教师信息",
+        "description" : "获取教师信息",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "gender" : {
+                      "type" : "string",
+                      "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                      "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                    },
+                    "education" : {
+                      "type" : "string",
+                      "description" : "{BACHELOR=BACHELOR, MASTER=MASTER, DOCTOR=DOCTOR, OTHER=OTHER}",
+                      "enum" : [ "BACHELOR", "MASTER", "DOCTOR", "OTHER" ]
+                    },
+                    "teachGrade" : {
+                      "type" : "string",
+                      "description" : "{小学=小学, 初中=初中, 高中=高中}",
+                      "enum" : [ "小学", "初中", "高中" ]
+                    },
+                    "subject" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "address" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "phone" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "experience" : {
+                      "type" : "integer",
+                      "description" : ""
+                    },
+                    "score" : {
+                      "type" : "number",
+                      "description" : ""
+                    },
+                    "hobby" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "school" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "addition" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "name" : {
+                      "type" : "string",
+                      "description" : ""
+                    }
+                  },
+                  "description" : ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/update/user" : {
+      "post" : {
+        "summary" : "修改用户个人信息接口",
+        "description" : "修改用户个人信息接口",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "email", "password", "username" ],
+                "type" : "object",
+                "properties" : {
+                  "userId" : {
+                    "type" : "integer",
+                    "description" : "用户唯一标识",
+                    "format" : "int64"
+                  },
+                  "username" : {
+                    "maxLength" : 20,
+                    "minLength" : 4,
+                    "type" : "string",
+                    "description" : "登录用户名"
+                  },
+                  "password" : {
+                    "maxLength" : 32,
+                    "minLength" : 6,
+                    "type" : "string",
+                    "description" : "登录密码"
+                  },
+                  "email" : {
+                    "type" : "string",
+                    "description" : "电子邮箱",
+                    "format" : "email"
+                  },
+                  "userType" : {
+                    "type" : "string",
+                    "description" : "{TEACHER=TEACHER, STUDENT=STUDENT}",
+                    "enum" : [ "TEACHER", "STUDENT" ]
+                  }
+                },
+                "description" : "用户信息更新对象"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "用户信息响应对象",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "userId" : {
+                      "type" : "string",
+                      "description" : "用户唯一标识"
+                    },
+                    "username" : {
+                      "type" : "string",
+                      "description" : "登录用户名"
+                    },
+                    "email" : {
+                      "type" : "string",
+                      "description" : "电子邮箱"
+                    },
+                    "userType" : {
+                      "type" : "string",
+                      "description" : "{TEACHER=TEACHER, STUDENT=STUDENT}",
+                      "enum" : [ "TEACHER", "STUDENT" ]
+                    },
+                    "createTime" : {
+                      "type" : "string",
+                      "description" : "注册时间或创建时间"
+                    }
+                  },
+                  "description" : "用户信息响应对象"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/update/teacher" : {
+      "post" : {
+        "summary" : "修改教师个人信息接口",
+        "description" : "修改教师个人信息接口",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "addition", "address", "education", "experience", "gender", "hobby", "name", "phone", "school", "score", "subject", "teachGrade" ],
+                "type" : "object",
+                "properties" : {
+                  "userId" : {
+                    "type" : "integer",
+                    "description" : "",
+                    "format" : "int64"
+                  },
+                  "gender" : {
+                    "type" : "string",
+                    "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                    "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                  },
+                  "education" : {
+                    "type" : "string",
+                    "description" : "{BACHELOR=BACHELOR, MASTER=MASTER, DOCTOR=DOCTOR, OTHER=OTHER}",
+                    "enum" : [ "BACHELOR", "MASTER", "DOCTOR", "OTHER" ]
+                  },
+                  "teachGrade" : {
+                    "type" : "string",
+                    "description" : "{小学=小学, 初中=初中, 高中=高中}",
+                    "enum" : [ "小学", "初中", "高中" ]
+                  },
+                  "subject" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "address" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "phone" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "experience" : {
+                    "type" : "integer",
+                    "description" : ""
+                  },
+                  "score" : {
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "hobby" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "school" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "addition" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "name" : {
+                    "maxLength" : 20,
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : "用户信息更新对象"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "老师信息响应对象\n 示范POST\n {\n   \"gender\": \"女\",\n   \"education\": \"硕士\",\n   \"teachGrade\": \"初中\",\n   \"subject\": \"物理\"\n }",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "gender" : {
+                      "type" : "string",
+                      "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                      "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                    },
+                    "education" : {
+                      "type" : "string",
+                      "description" : "{BACHELOR=BACHELOR, MASTER=MASTER, DOCTOR=DOCTOR, OTHER=OTHER}",
+                      "enum" : [ "BACHELOR", "MASTER", "DOCTOR", "OTHER" ]
+                    },
+                    "teachGrade" : {
+                      "type" : "string",
+                      "description" : "{小学=小学, 初中=初中, 高中=高中}",
+                      "enum" : [ "小学", "初中", "高中" ]
+                    },
+                    "subject" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "address" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "phone" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "experience" : {
+                      "type" : "integer",
+                      "description" : ""
+                    },
+                    "score" : {
+                      "type" : "number",
+                      "description" : ""
+                    },
+                    "hobby" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "school" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "addition" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "name" : {
+                      "type" : "string",
+                      "description" : ""
+                    }
+                  },
+                  "description" : "老师信息响应对象\n 示范POST\n {\n   \"gender\": \"女\",\n   \"education\": \"硕士\",\n   \"teachGrade\": \"初中\",\n   \"subject\": \"物理\"\n }"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/update/student" : {
+      "post" : {
+        "summary" : "修改学生信息",
+        "description" : "修改学生信息",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "addition", "address", "gender", "goal", "grade", "hobby", "name", "phone", "score", "subject" ],
+                "type" : "object",
+                "properties" : {
+                  "userId" : {
+                    "type" : "integer",
+                    "description" : "",
+                    "format" : "int64"
+                  },
+                  "gender" : {
+                    "type" : "string",
+                    "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                    "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                  },
+                  "grade" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "subject" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "address" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "phone" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "score" : {
+                    "type" : "number",
+                    "description" : ""
+                  },
+                  "hobby" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "goal" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "addition" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "name" : {
+                    "maxLength" : 20,
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "gender" : {
+                      "type" : "string",
+                      "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                      "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                    },
+                    "grade" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "subject" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "address" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "phone" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "score" : {
+                      "type" : "number",
+                      "description" : ""
+                    },
+                    "hobby" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "goal" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "addition" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
+                    "name" : {
+                      "type" : "string",
+                      "description" : ""
+                    }
+                  },
+                  "description" : ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/file/uploadfile" : {
+      "post" : {
+        "summary" : "多文件上传接口",
+        "description" : "多文件上传接口",
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "required" : [ "files" ],
+                "type" : "object",
+                "properties" : {
+                  "files" : {
+                    "type" : "string",
+                    "description" : "要上传的文件数组",
+                    "format" : "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "文件访问URL列表",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "description" : "文件访问URL列表",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/file/uploadavatar" : {
+      "post" : {
+        "summary" : "上传头像",
+        "description" : "上传头像",
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "required" : [ "file" ],
+                "type" : "object",
+                "properties" : {
+                  "file" : {
+                    "type" : "string",
+                    "description" : "",
+                    "format" : "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "文件访问URL",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "description" : "文件访问URL"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/file/list" : {
+      "get" : {
+        "summary" : "获取用户文件列表接口",
+        "description" : "获取用户文件列表接口",
+        "responses" : {
+          "200" : {
+            "description" : "文件访问URL列表",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "description" : "文件访问URL列表",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : { }
+}
