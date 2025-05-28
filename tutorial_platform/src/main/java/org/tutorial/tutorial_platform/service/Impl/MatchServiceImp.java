@@ -73,11 +73,8 @@ public class MatchServiceImp implements MatchService {
     @Override
     public Page<MatchStudentVO> findStudentsWithAiRanking(MatchStudentDTO dto) {
         PageRequest pageRequest = PageRequest.of(dto.getPage(), dto.getSize());
-
-        // 分页查询符合科目和年级的学生（需确认StudentRepository有对应方法）
         Page<Student> pageFromDb = studentRepository.findAllBySubjectAndGrade(dto.getSubject(), dto.getGrade(), pageRequest);
 
-        // 过滤学生评分，防止null
         List<Student> filtered = pageFromDb.stream()
                 .filter(s -> s.getScore() != null && s.getScore().doubleValue() >= dto.getMinScore())
                 .collect(Collectors.toList());
@@ -86,13 +83,20 @@ public class MatchServiceImp implements MatchService {
             return new PageImpl<>(Collections.emptyList(), pageRequest, 0);
         }
 
-        // 调用AI排序接口，获取排序后的学生ID列表
-        List<Long> sortedIds = aiService.rankStudentsByAi(filtered, dto);
+        // 只为没有 vector 的学生调用 AI
+        List<Student> studentsToVectorize = filtered.stream()
+                .filter(s -> s.getVector() == null || s.getVector().isEmpty())
+                .toList();
 
-        // 根据排序ID重排学生列表
+        for (Student s : studentsToVectorize) {
+            List<Double> vector = aiService.getVectorFromAi(s);
+            s.setVector(vector.toString());
+            studentRepository.save(s);
+        }
+
+        List<Long> sortedIds = aiService.rankStudentsByAi(filtered, dto); // 假设你已有 rankStudentsByAi 方法
         List<Student> sorted = sortStudentsByIds(filtered, sortedIds);
 
-        // 转成VO列表
         List<MatchStudentVO> vos = sorted.stream()
                 .map(this::toMatchStudentVO)
                 .collect(Collectors.toList());

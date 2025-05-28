@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.tutorial.tutorial_platform.pojo.Teacher;
+
 /**
  * 学生数据访问接口
  * @author zhj
@@ -24,5 +26,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     boolean existsByUserUserId(Long userId);
 
 
-    Page<Teacher> findAllBySubjectAndTeachGrade(String subject, String teachGrade, Pageable pageable);
+    Page<Student> findAllBySubjectAndGrade(String subject, String teachGrade, Pageable pageable);
 }

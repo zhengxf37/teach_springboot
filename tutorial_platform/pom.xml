@@ -55,7 +55,18 @@
 			<artifactId>spring-security-crypto</artifactId>
 			<version>6.3.5</version>
 		</dependency>
+		<!-- Lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
+		<!-- Jackson JSON 解析器 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
 		<!-- 参数校验 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

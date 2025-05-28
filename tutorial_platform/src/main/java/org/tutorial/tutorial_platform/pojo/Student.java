@@ -56,4 +56,9 @@ public class Student {
 
     @Column(name = "addition", columnDefinition = "TEXT NOT NULL")
     private String addition;
+
+    @Column(name = "vector", columnDefinition = "TEXT")
+    private String vector; // 用字符串保存 JSON 格式的向量
+
+
 }
