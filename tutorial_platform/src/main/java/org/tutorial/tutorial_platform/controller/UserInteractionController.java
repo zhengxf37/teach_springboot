@@ -11,12 +11,12 @@ import org.tutorial.tutorial_platform.vo.UserCommentVO;
 import java.util.List;
 
 /**
- * 用户状态管理类
+ * UserInteractionController-用户状态管理类
  * 功能：设置用户匹配进程的状态，添加评价
  *
  * 用户状态包括：
  * 用户id
- * 状态：：0-未公开，1-公开中，2-匹配中，3-被匹配中，4-拒绝，5-被拒绝，6-完成
+ * 状态：：0-未公开，1-公开中，2-匹配中，3-被匹配中，4-拒绝，5-被拒绝，6-完成，7-申请方取消
  * 匹配对象id
  *
  * 用户评价：单独的函数和数据库

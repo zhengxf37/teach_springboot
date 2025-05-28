@@ -8,4 +8,11 @@ public interface AiService {
      * @return  AI的回答
      */
     String chat(String question);
+
+    /**
+     * 获取AI的回答，保存到数据库中
+     * @param userId
+     *
+     */
+    void fetchAiData(Long userId);
 }

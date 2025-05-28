@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * 用户交互服务实现类
- * 状态：：0-未公开，1-公开中，2-匹配中，3-被匹配中，4-拒绝，5-被拒绝，6-完成
+ * 状态：：0-未公开，1-公开中，2-匹配中，3-被匹配中，4-拒绝，5-被拒绝，6-完成，7-申请方取消
  */
 @Service
 public class UserInteractionServiceImp implements UserInteractionService {
@@ -42,6 +42,7 @@ public class UserInteractionServiceImp implements UserInteractionService {
                 });
         // 2. 更新用户信息
         userStatus.setStatus(1);
+        userStatus.setWantId(0L);
 
 
         // 3. 保存更新
@@ -66,6 +67,7 @@ public class UserInteractionServiceImp implements UserInteractionService {
                 });
         // 2. 更新用户信息
         userStatus.setStatus(0);
+        userStatus.setWantId(0L);
 
         // 3. 保存更新
         userStatusRepository.save(userStatus);
@@ -84,6 +86,8 @@ public class UserInteractionServiceImp implements UserInteractionService {
                     User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
                     UserStatus userStatus1 = new UserStatus();
                     userStatus1.setUser(user);
+                    userStatus1.setStatus(0);
+                    userStatus1.setWantId(0L);
                     return userStatus1;
                 });
         return userStatus.getStatus();
@@ -100,7 +104,7 @@ public class UserInteractionServiceImp implements UserInteractionService {
                 .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在"));
         UserStatus userStatus2 = userStatusRepository.findById(wantId)
                 .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在"));
-
+        //申请匹配，状态码为2，被申请码为3
         userStatus.setStatus(2);
         userStatus.setWantId(wantId);
         userStatus2.setStatus(3);
@@ -120,8 +124,16 @@ public class UserInteractionServiceImp implements UserInteractionService {
                 .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
         UserStatus userStatus2 = userStatusRepository.findById(userStatus.getWantId())
                 .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
-        userStatus.setStatus(4);
-        userStatus2.setStatus(5);
+        if (userStatus.getStatus() == 3) {
+
+            userStatus.setStatus(4);
+            userStatus2.setStatus(5);
+        }else{
+            userStatus.setStatus(7);
+            userStatus2.setStatus(7);
+        }
+        userStatusRepository.save(userStatus2);
+        userStatusRepository.save(userStatus);
 
         return true;
     }
@@ -148,7 +160,15 @@ public class UserInteractionServiceImp implements UserInteractionService {
      * @return
      */
     public List<UserCommentVO> queryJudge(Long userId){
-        return (List<UserCommentVO>) userCommentRepository.findByUserId(userId);
+        List<UserComment> entityList = userCommentRepository.findByUserId(userId);
+        List<UserCommentVO> vos = entityList.stream()
+                .map(comment -> new UserCommentVO(
+                        comment.getFromId(),
+                        comment.getContent()
+                ))
+                .toList();
+
+        return vos;
     }
 
 }
