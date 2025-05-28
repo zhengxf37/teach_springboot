@@ -3,6 +3,14 @@ package org.tutorial.tutorial_platform.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+
+
+
+
+
+
+
+
 /**
  * 学生发送的匹配请求参数
  */
@@ -15,4 +23,7 @@ public class MatchTeacherDTO {
     private String grade;
 
     private Double minScore = 4.5; // 默认最低评分
+
+    private int page = 0;      // 第几页，从0开始
+    private int size = 10;     // 每页数量
 }

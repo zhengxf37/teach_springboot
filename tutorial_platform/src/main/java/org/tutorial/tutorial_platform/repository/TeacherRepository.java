@@ -4,7 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.tutorial.tutorial_platform.pojo.Teacher;
 import java.util.List;
 import java.util.Optional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 /**
  * 教师数据访问接口
  * 提供对 teacher 表的CRUD操作
@@ -17,16 +18,13 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
      */
     Optional<Teacher> findByUserUserId(Long userId);
     //TODO老师数据库
-    /**
-     * 根据科目和教学年级查询教师列表
-     * @param subject 科目名称
-     * @param teachGrade 教学年级
-     * @return 教师列表
-     */
-    List<Teacher> findAllBySubjectAndTeachGrade(String subject, String teachGrade);
 
     /**
      * 查询用户Id是否在老师表中
      */
     boolean existsByUserUserId(Long userId);
+
+
+
+    Page<Teacher> findAllBySubjectAndTeachGrade(String subject, String teachGrade, Pageable pageable);
 }
