@@ -40,10 +40,10 @@ public class AiController {
         return ResponseEntity.ok(aiService.chat(requestDTO.getPrompt()));
     }
     /**
-//     * 异步处理数据，生成用户的评价，保存数据到数据库
-//     * 这个评价作为-1号用户给当前用户的评价，参考了用户的信息
-//     * @return
-//     */
+     * 异步处理数据，生成用户的评价，保存数据到数据库,使用python脚本
+     * 这个评价作为-1号用户给当前用户的评价，参考了用户的信息
+     * @return
+     */
     @GetMapping("/fetch-ai-data")
     public ResponseEntity<String> fetchAidata(HttpServletRequest request) {
         // 调用Service层方法，异步处理数据
@@ -52,4 +52,5 @@ public class AiController {
         // 立即返回响应给前端
         return ResponseEntity.ok("数据正在处理中，后端自动保存");
     }
+
 }

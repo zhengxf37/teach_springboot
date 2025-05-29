@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,46 +40,7 @@ public class AiServiceImp implements AiService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    /**
-     * 向 DeepSeek 发送请求并获取 AI 的回答
-     *
-     * @param question 用户输入的问题
-     * @return AI 返回的回答内容
-     */
-    @Override
-    public String chat(String question) {
-        try {
-            // 设置 API 密钥和基础 URL
-            String apiKey = "sk-2cdaa628f72e496e9bd19ab75f9afb6a";
-            String baseUrl = "https://api.deepseek.com";
 
-            // 构建请求体 JSON 数据
-            String requestBody = "{"
-                    + "\"model\": \"deepseek-chat\","
-                    + " \"messages\": [{\"role\": \"system\",\"content\": \"You are a helpful assistant.\"},{\"role\": \"user\",\"content\": \"" + question + "\"}],"
-                    + "\"stream\": false}";
-
-            // 设置请求头信息
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + apiKey);
-
-            // 封装请求实体
-            HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-
-            // 发起 POST 请求
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(baseUrl + "/chat/completions", requestEntity, String.class);
-
-            // 判断响应状态码是否为 200 OK
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
-                return responseEntity.getBody();
-            } else {
-                throw new RuntimeException("AI 接口返回空结果");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("调用 DeepSeek API 失败: " + e.getMessage(), e);
-        }
-    }
 
     /**
      * 获取学生的 AI 向量表示（用于相似度匹配）
@@ -230,6 +193,47 @@ public class AiServiceImp implements AiService {
                 .collect(Collectors.toList());
     }
 
+
+    /**
+     * 向 DeepSeek 发送请求并获取 AI 的回答
+     *
+     * @param question 用户输入的问题
+     * @return AI 返回的回答内容
+     */
+    @Override
+    public String chat(String question) {
+        try {
+            // 设置 API 密钥和基础 URL
+            String apiKey = "sk-2cdaa628f72e496e9bd19ab75f9afb6a";
+            String baseUrl = "https://api.deepseek.com";
+
+            // 构建请求体 JSON 数据
+            String requestBody = "{"
+                    + "\"model\": \"deepseek-chat\","
+                    + " \"messages\": [{\"role\": \"system\",\"content\": \"You are a helpful assistant.\"},{\"role\": \"user\",\"content\": \"" + question + "\"}],"
+                    + "\"stream\": false}";
+
+            // 设置请求头信息
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Bearer " + apiKey);
+
+            // 封装请求实体
+            HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            // 发起 POST 请求
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(baseUrl + "/chat/completions", requestEntity, String.class);
+
+            // 判断响应状态码是否为 200 OK
+            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
+                return responseEntity.getBody();
+            } else {
+                throw new RuntimeException("AI 接口返回空结果");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("调用 DeepSeek API 失败: " + e.getMessage(), e);
+        }
+    }
     /**
      * 异步调用 AI 获取用户数据并保存
      *
@@ -238,37 +242,44 @@ public class AiServiceImp implements AiService {
     @Override
     @Async
     public void fetchAiData(Long userId) {
-        String apiKey = "sk-2cdaa628f72e496e9bd19ab75f9afb6a";
-        String baseUrl = "https://api.deepseek.com";
+//        调用一个python程序
+        String pythonScriptPath = "src/main/resources/python_scripts/extract_and_chat.py";
+        String[] command = {
+                "python", pythonScriptPath  // 假设你使用的是Python 3
+        };
+        log.info("开始调用python脚本,内容="+ Arrays.toString(command));
+        try {
+            // 创建并启动进程
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            Process process = processBuilder.start();
 
-        String requestBody = "{"
-                + "\"model\": \"deepseek-chat\","
-                + " \"messages\": ["
-                + "     {"
-                + "         \"role\": \"system\","
-                + "         \"content\": \"You are a helpful assistant.\""
-                + "     },"
-                + "     {"
-                + "         \"role\": \"user\","
-                + "         \"content\": \"" + "我如何选择一个合适的老师" + "\""
-                + "     }"
-                + " ],"
-                + "\"stream\": false"
-                + "}";
+            // 捕获Python脚本的输出
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            StringBuilder output = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + apiKey);
+            // 等待脚本执行完成
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                // 如果脚本执行失败，捕获错误信息
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                String errorLine;
+                StringBuilder errorOutput = new StringBuilder();
+                while ((errorLine = errorReader.readLine()) != null) {
+                    errorOutput.append(errorLine).append("\n");
+                }
+                throw new RuntimeException("Python script execution failed with error: " + errorOutput);
+            }
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-        String apiUrl = baseUrl + "/chat/completions";
+            log.info("Python script output: " + output);
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, requestEntity, String.class);
-
-        String responseBody = responseEntity.getBody();
-        log.info("用户{}的AI数据已获取", userId);
-        if (responseBody != null) {
-            log.info(responseBody);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to execute Python script", e);
         }
+
     }
+
 }
