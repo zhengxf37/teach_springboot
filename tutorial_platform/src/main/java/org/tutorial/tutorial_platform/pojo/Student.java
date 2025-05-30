@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 /**
  * 学生实体类
  * 和数据库对应
- *
  * 元信息：
  * @author zhj
  * @version 1.0

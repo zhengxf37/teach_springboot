@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 /**
  * Teacher -老师实体类
  * 和数据库对应
- *
  * 元信息：
  * @author zhj
  * @version 1.0

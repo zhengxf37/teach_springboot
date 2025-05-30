@@ -2,20 +2,14 @@ package org.tutorial.tutorial_platform.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-
-
-
-
-
-
-
-
 /**
  * 学生发送的匹配请求参数
  */
 @Data
 public class MatchTeacherDTO {
+    @NotNull(message = "teacherId 不能为空")
+    private Long teacherId;
+
     @NotNull(message = "科目不能为空")
     private String subject;
 
