@@ -6,18 +6,21 @@ import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
+import java.util.regex.Pattern;
+
 import org.tutorial.tutorial_platform.pojo.Student;
 import org.tutorial.tutorial_platform.pojo.Teacher;
 import org.tutorial.tutorial_platform.service.AiService;
 
 /**
- * AI 服务实现类，负责与第三方 AI 接口交互，实现向量生成功能。
+ * AI 服务实现类，负责与第三方 AI 接口交互，生成学生和教师的特征向量。
  * 功能说明：
  * - 使用 DeepSeek 的 API 为学生和老师生成匹配向量；
- * - 向量基于：性别、年级、科目、地址、手机号、评分、爱好、目标/补充信息；
+ * - 向量基于：性别、年级、科目、地址、手机号、评分、爱好等字段；
  * - 向量用于本地余弦相似度排序；
  * - 所有 AI 调用都走异步，避免阻塞主线程；
  * - 提供统一接口供 MatchService 调用。
@@ -25,22 +28,13 @@ import org.tutorial.tutorial_platform.service.AiService;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AiServiceImp implements AiService{
+public class AiServiceImp implements AiService {
 
-    /**
-     * Spring 提供的标准 HTTP 请求客户端
-     * 用于向 DeepSeek 发送请求并获取响应
-     */
+    // RestTemplate 用于发送 HTTP 请求到 DeepSeek 的 Chat API
     private final RestTemplate restTemplate;
 
-    /**
-     * Jackson 提供的 JSON 解析器
-     * 用于将 AI 返回的字符串向量解析为 List<Double>
-     */
+    // Jackson ObjectMapper 用于解析 JSON 响应
     private final ObjectMapper objectMapper;
-
-
-
 
     // DeepSeek API 配置
     private static final String API_KEY = "sk-2cdaa628f72e496e9bd19ab75f9afb6a";
@@ -71,6 +65,14 @@ public class AiServiceImp implements AiService{
     }
 
     /**
+     * 清理输入文本中的非法控制字符（如 \u0000-\u001F）
+     */
+    private String sanitizeInput(String input) {
+        if (input == null) return "";
+        return input.replaceAll("[\\x00-\\x1F\\x7F]", "");
+    }
+
+    /**
      * 构建学生的 AI 向量提示词（只保留指定字段）
      * 字段包括：
      * - 性别 (gender)
@@ -84,18 +86,40 @@ public class AiServiceImp implements AiService{
      * - 补充信息 (addition)
      */
     private String buildStudentVectorPrompt(Student student) {
-        return "请根据以下学生信息生成一个用于匹配的数值向量（如[0.1, 0.5, 0.3]），" +
-                "向量空间中越接近的学生和老师越匹配。\n" +
-                "性别：" + student.getGender() +
-                ", 年级：" + student.getGrade() +
-                ", 科目：" + student.getSubject() +
-                ", 地址：" + student.getAddress() +
-                ", 手机号：" + student.getPhone() +
-                ", 评分：" + student.getScore() +
-                ", 爱好：" + student.getHobby() +
-                ", 目标：" + student.getGoal() +
-                ", 补充信息：" + student.getAddition() +
-                "\n请只返回向量，不要解释。";
+        return "请根据以下学生信息生成一个17维数值向量，按顺序对应下列维度，仅输出JSON数组：\n" +
+                "1. 性别特征（男=0.0，女=1.0）\n" +
+                "2. 教学经验强度（小一=0.0，高三=1.0）\n" +
+                "3. 理科教学倾向（数理化=1.0，纯文科=0.0）\n" +
+                "4. 文科教学倾向（语文历史=1.0，纯理科=0.0）\n" +
+                "5. 实践教学倾向（物理生物=1.0，理论科目=0.0）\n" +
+                "6. 区域邻近度（A=0.0，E=1.0，相邻差≤0.3）\n" +
+                "7. 课堂互动能力（内向=0.0，活跃=1.0）\n" +
+                "8. 教学负责程度（随意=0.0，严谨=1.0）\n" +
+                "9. 教学方法创新度（传统=0.0，创新=1.0）\n" +
+                "10. 学生满意度（1分=0.0，5分=1.0）\n" +
+                "11. 艺术素养（有艺术爱好=1.0，无=0.0）\n" +
+                "12. 科技素养（有科技爱好=1.0，无=0.0）\n" +
+                "13. 体育爱好（有=1.0，无=0.0）\n" +
+                "14. 阅读爱好（有=1.0，无=0.0）\n" +
+                "15. 社交爱好（有=1.0，无=0.0）\n" +
+                "16. 情绪稳定性（波动大=0.0，稳定=1.0）\n" +
+                "17. 开放性（保守=0.0，开放=1.0）\n\n" +
+
+                "学生信息如下：\n" +
+                "- 性别：" + student.getGender() + "\n" +
+                "- 年级：" + student.getGrade() + "\n" +
+                "- 科目：" + student.getSubject() + "\n" +
+                "- 地址：" + student.getAddress() + "\n" +
+                "- 手机号：" + student.getPhone() + "\n" +
+                "- 评分：" + student.getScore() + "\n" +
+                "- 爱好：" + student.getHobby() + "\n" +
+                "- 目标：" + student.getGoal() + "\n" +
+                "- 补充信息：" + student.getAddition() + "\n\n" +
+
+                "输出要求：\n" +
+                "1. 严格输出一个包含17个浮点数的JSON数组，例如：[0.0, 0.4, 1.0, 0.0, 0.8, 0.5, 0.6, 0.9, 0.7, 0.85, 0.0, 1.0, 0.0, 1.0, 0.0, 0.5, 0.6]\n" +
+                "2. 不添加任何额外文字或解释。\n" +
+                "3. 输出必须是合法JSON数组，不能包含其他字符。";
     }
 
     /**
@@ -111,17 +135,39 @@ public class AiServiceImp implements AiService{
      * - 补充信息 (addition)
      */
     private String buildTeacherVectorPrompt(Teacher teacher) {
-        return "请根据以下老师信息生成一个用于匹配的数值向量（如[0.1, 0.5, 0.3]），" +
-                "向量空间中越接近的学生和老师越匹配。\n" +
-                "性别：" + teacher.getGender() +
-                ", 教授年级：" + teacher.getTeachGrade() +
-                ", 科目：" + teacher.getSubject() +
-                ", 地址：" + teacher.getAddress() +
-                ", 手机号：" + teacher.getPhone() +
-                ", 评分：" + teacher.getScore() +
-                ", 爱好：" + teacher.getHobby() +
-                ", 补充信息：" + teacher.getAddition() +
-                "\n请只返回向量，不要解释。";
+        return "请根据以下教师信息生成一个17维数值向量，按顺序对应下列维度，仅输出JSON数组：\n" +
+                "1. 性别特征（男=0.0，女=1.0）\n" +
+                "2. 教学经验强度（小一=0.0，高三=1.0）\n" +
+                "3. 理科教学倾向（数理化=1.0，纯文科=0.0）\n" +
+                "4. 文科教学倾向（语文历史=1.0，纯理科=0.0）\n" +
+                "5. 实践教学倾向（物理生物=1.0，理论科目=0.0）\n" +
+                "6. 区域邻近度（A=0.0，E=1.0，相邻差≤0.3）\n" +
+                "7. 课堂互动能力（内向=0.0，活跃=1.0）\n" +
+                "8. 教学负责程度（随意=0.0，严谨=1.0）\n" +
+                "9. 教学方法创新度（传统=0.0，创新=1.0）\n" +
+                "10. 学生满意度（1分=0.0，5分=1.0）\n" +
+                "11. 艺术素养（有艺术爱好=1.0，无=0.0）\n" +
+                "12. 科技素养（有科技爱好=1.0，无=0.0）\n" +
+                "13. 体育爱好（有=1.0，无=0.0）\n" +
+                "14. 阅读爱好（有=1.0，无=0.0）\n" +
+                "15. 社交爱好（有=1.0，无=0.0）\n" +
+                "16. 情绪稳定性（波动大=0.0，稳定=1.0）\n" +
+                "17. 开放性（保守=0.0，开放=1.0）\n\n" +
+
+                "教师信息如下：\n" +
+                "- 性别：" + teacher.getGender() + "\n" +
+                "- 教授年级：" + teacher.getTeachGrade() + "\n" +
+                "- 科目：" + teacher.getSubject() + "\n" +
+                "- 地址：" + teacher.getAddress() + "\n" +
+                "- 手机号：" + teacher.getPhone() + "\n" +
+                "- 评分：" + teacher.getScore() + "\n" +
+                "- 爱好：" + teacher.getHobby() + "\n" +
+                "- 补充信息：" + teacher.getAddition() + "\n\n" +
+
+                "输出要求：\n" +
+                "1. 严格输出一个包含17个浮点数的JSON数组\n" +
+                "2. 不添加任何额外文字或解释。\n" +
+                "3. 输出必须是合法JSON数组，不能包含其他字符。";
     }
 
     /**
@@ -132,16 +178,26 @@ public class AiServiceImp implements AiService{
      */
     private List<Double> callAiAndGetVector(String prompt) {
         try {
-            // 调用 AI 接口，获取原始字符串格式向量
-            String aiResponse = chat(prompt).trim();
+            String aiResponse = chat(prompt).trim(); // 获取原始响应
 
-            // 检查格式是否合法
-            if (!aiResponse.startsWith("[") || !aiResponse.endsWith("]")) {
-                throw new RuntimeException("AI 返回的向量格式错误：" + aiResponse);
+            // 使用 Jackson 解析完整 JSON 响应
+            JsonNode rootNode = objectMapper.readTree(aiResponse);
+
+            // 提取 content 字段内容（即 AI 返回的向量字符串）
+            JsonNode contentNode = rootNode.at("/choices/0/message/content");
+            if (contentNode == null || !contentNode.isTextual()) {
+                throw new RuntimeException("AI 返回中未找到有效的 content 字段");
             }
 
-            // 将字符串向量解析为 List<Double>
-            return parseVector(aiResponse);
+            String vectorStr = contentNode.asText().trim();
+
+            // 校验格式是否为 [ ... ]
+            if (!vectorStr.startsWith("[") || !vectorStr.endsWith("]")) {
+                throw new RuntimeException("AI 返回的向量格式错误：" + vectorStr);
+            }
+
+            // 解析为 Double 列表
+            return parseVector(vectorStr);
 
         } catch (Exception e) {
             log.error("调用 AI 生成向量失败", e);
@@ -158,19 +214,34 @@ public class AiServiceImp implements AiService{
     @Override
     public String chat(String question) {
         try {
+            // 清洗输入文本中的非法字符
+            String safeQuestion = sanitizeInput(question);
 
+            // 构建系统消息和用户消息
+            Map<String, Object> messageSystem = Map.of("role", "system", "content", "You are a helpful assistant.");
+            Map<String, Object> messageUser = Map.of("role", "user", "content", safeQuestion);
 
-            // 构建请求体
-            HttpEntity<String> requestEntity = buildRequestBody(question);
+            // 构建完整的 JSON 请求体
+            Map<String, Object> requestBodyMap = Map.of(
+                    "model", "deepseek-chat",
+                    "messages", List.of(messageSystem, messageUser),
+                    "stream", false
+            );
 
-            // 发起 POST 请求
+            // 序列化为 JSON 字符串
+            String jsonBody = objectMapper.writeValueAsString(requestBodyMap);
+
+            // 构造请求头
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, buildHeaders());
+
+            // 发送 POST 请求并获取响应
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(
                     BASE_URL + "/chat/completions",
                     requestEntity,
                     String.class
             );
 
-            // 判断响应状态码是否为 OK
+            // 成功则返回响应内容
             if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
                 return responseEntity.getBody();
             } else {
@@ -192,20 +263,6 @@ public class AiServiceImp implements AiService{
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + API_KEY);
         return headers;
-    }
-
-    /**
-     * 构建请求体
-     *
-     * @param question 提示词内容
-     * @return 包含模型参数和消息的 JSON 请求体
-     */
-    private HttpEntity<String> buildRequestBody(String question) {
-        String requestBody = String.format(
-                "{\"model\": \"deepseek-chat\", \"messages\": [{\"role\": \"system\",\"content\": \"You are a helpful assistant.\"},{\"role\": \"user\",\"content\": \"%s\"}], \"stream\": false}",
-                question.replace("\"", "\\\"")
-        );
-        return new HttpEntity<>(requestBody, buildHeaders());
     }
 
     /**
@@ -232,7 +289,6 @@ public class AiServiceImp implements AiService{
     public void fetchAiData(Long userId) {
         String requestBody =
                 "{\"model\": \"deepseek-chat\", \"messages\": [{\"role\": \"system\",\"content\": \"You are a helpful assistant.\"},{\"role\": \"user\",\"content\": \"我如何选择一个合适的老师\"}], \"stream\": false}";
-
 
         try {
             HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, buildHeaders());
