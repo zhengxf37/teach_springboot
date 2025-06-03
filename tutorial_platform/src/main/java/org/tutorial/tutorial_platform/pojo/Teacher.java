@@ -68,5 +68,6 @@ public class Teacher {
     @Column(name = "addition", columnDefinition = "TEXT NOT NULL")
     private String addition;
     @Column(name = "vector", columnDefinition = "JSON")
+    @Convert(converter = DoubleListJsonConverter.class)
     private List<Double> vector; // 直接存储为 JSON 数组
 }

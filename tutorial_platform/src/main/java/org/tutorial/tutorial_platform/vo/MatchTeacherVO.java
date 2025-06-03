@@ -22,6 +22,8 @@ public class MatchTeacherVO {
 
 
     public MatchTeacherVO(Teacher teacher) {
+        this.userId = teacher.getUser().getUserId();
+        this.username = teacher.getName();
         this.gender = teacher.getGender();
         this.education = teacher.getEducation();
         this.teachGrade = teacher.getTeachGrade();

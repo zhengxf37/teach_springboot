@@ -61,5 +61,4 @@ public class Student {
     @Column(name = "vector", columnDefinition = "JSON")
     private List<Double> vector; // 直接存储为 JSON 数组
 
-
 }

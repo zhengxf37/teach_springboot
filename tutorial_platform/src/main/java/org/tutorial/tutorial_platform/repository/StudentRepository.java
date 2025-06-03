@@ -45,28 +45,46 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query(
             value =
                     "SELECT t.*, " +
-                            "SUM(vt.value * sv.value) / " +
-                            "(SQRT(SUM(vt.value^2)) * SQRT(SUM(sv.value^2))) AS similarity " +
-                            //余弦相似度计算为小数，similarity
-                            //展开老师/学生向量，展开向量中的元素，并计算相似度
-                            "FROM student t " +
-                            //CROSS JOIN JSON_TABLE	将 JSON 数组展开为多行
-                            "CROSS JOIN ( " +
-                            "    SELECT jt.value, ROW_NUMBER() OVER () AS pos " +
-                            "    FROM JSON_TABLE(t.vector, '$[*]' COLUMNS (value DECIMAL(10,2) PATH '$')) AS jt) vt " +
-                            "JOIN ( " +
-                            "    SELECT jt.value, ROW_NUMBER() OVER () AS pos " +
-                            "    FROM JSON_TABLE(CAST(:teacherVector AS JSON), '$[*]' COLUMNS (value DECIMAL(10,2) PATH '$')) AS jt) sv ON vt.pos = sv.pos " +
-                            //筛选条件，暂时2个条件，科目，学生年级
-                            "WHERE 1=1 " +
-                            "AND (:subject IS NULL OR t.subject = :subject) " +
-                            "AND (:teachGrade IS NULL OR t.subject = :teachGrade) " +
-                            //聚合老师，CROSS JOIN 固定语法
+                            "    SUM(tvt.tvt_value * svt.svt_value) / " +
+                            "    (SQRT(SUM(tvt.tvt_value * tvt.tvt_value)) * SQRT(SUM(svt.svt_value * svt.svt_value))) AS similarity " +
+                            "FROM ( " +
+                            "    SELECT * " +
+                            "    FROM student " +//1
+                            "    WHERE 1=1 " +
+//                            "        AND (:subject IS NULL OR subject = :subject) " +
+//                            "        AND (:teachGrade IS NULL OR teach_grade = :teachGrade) " +
+                            ") t " +
+                            "JOIN (" +
+                            "    SELECT " +
+                            "        sub.user_id, " +
+                            "        sub.`value` AS svt_value, " +//2
+                            "        ROW_NUMBER() OVER (PARTITION BY sub.user_id ORDER BY (SELECT NULL)) AS pos " +
+                            "    FROM (" +
+                            "        SELECT user_id, jt.`value` " +
+                            "        FROM student " + //3
+                            "        CROSS JOIN JSON_TABLE( " +
+                            "            vector, " +
+                            "            '$[*]' COLUMNS ( " +
+                            "                `value` DECIMAL(10,2) PATH '$' " +
+                            "            ) " +
+                            "        ) AS jt " +
+                            "    ) AS sub " +
+                            ") svt ON t.user_id = svt.user_id " +
+                            "JOIN (" +
+                            "    SELECT " +
+                            "        `value` AS tvt_value, " +
+                            "        ROW_NUMBER() OVER () AS pos " +
+                            "    FROM JSON_TABLE( " +
+                            "        CAST('[1.0, 0.8, 1.6]' AS JSON), " +
+                            "        '$[*]' COLUMNS ( " +
+                            "            `value` DECIMAL(10,2) PATH '$' " +
+                            "        ) " +
+                            "    ) AS jt " +
+                            ") tvt ON svt.pos = tvt.pos " +
                             "GROUP BY t.user_id " +
-                            //相似度降序排序
                             "ORDER BY similarity DESC",
             countQuery =
-                    "SELECT COUNT( t.user_id) FROM student t " +
+                    "SELECT COUNT(*) FROM student t " +
                             "WHERE 1=1 " +
                             "AND (:subject IS NULL OR t.subject = :subject) " +
                             "AND (:teachGrade IS NULL OR t.subject = :teachGrade)",

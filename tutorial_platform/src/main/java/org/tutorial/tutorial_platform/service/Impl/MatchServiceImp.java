@@ -103,8 +103,8 @@ public class MatchServiceImp implements MatchService {
         );
         // 转换 VO（保持原有逻辑）
         return teacherPage.map(teacher -> {
-            MatchTeacherVO vo = new MatchTeacherVO();
-            BeanUtils.copyProperties(teacher, vo);
+            MatchTeacherVO vo = new MatchTeacherVO(teacher);
+
 
             return vo;
         });
@@ -127,8 +127,7 @@ public class MatchServiceImp implements MatchService {
                 PageRequest.of(matchTeacherDTO.getPage(), matchTeacherDTO.getSize())
         );
         return studentPage.map(student -> {
-            MatchStudentVO vo = new MatchStudentVO();
-            BeanUtils.copyProperties(student, vo);
+            MatchStudentVO vo = new MatchStudentVO(student);
             return vo;
         });
     }
