@@ -26,74 +26,71 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     Optional<Student> findByUserUserId(Long userId);
 
     /**
-     * 根据科目和年级分页查询学生列表（不考虑性别）
+     * 根据科目和教授年级分页查询教师列表（不考虑性别）
      *
-     * @param subject 科目
-     * @param grade 年级
-     * @param pageable 分页参数
-     * @return 分页的学生列表
-     */
-    Page<Student> findAllBySubjectAndGrade(String subject, String grade, Pageable pageable);
-    /**
-     * 自定义查询接口，用于根据向量进行查询和排序
-     * @param teacherVector 学生向量
-     * @param subject  科目（可选）
-     * @param teachGrade 年级（可选）
-     * @param pageable 分页参数
      * @return 分页的教师列表
      */
-    @Query(
-            value =
-                    "SELECT t.*, " +
-                            "    SUM(tvt.tvt_value * svt.svt_value) / " +
-                            "    (SQRT(SUM(tvt.tvt_value * tvt.tvt_value)) * SQRT(SUM(svt.svt_value * svt.svt_value))) AS similarity " +
-                            "FROM ( " +
-                            "    SELECT * " +
-                            "    FROM student " +//1
-                            "    WHERE 1=1 " +
-//                            "        AND (:subject IS NULL OR subject = :subject) " +
-//                            "        AND (:teachGrade IS NULL OR teach_grade = :teachGrade) " +
-                            ") t " +
-                            "JOIN (" +
-                            "    SELECT " +
-                            "        sub.user_id, " +
-                            "        sub.`value` AS svt_value, " +//2
-                            "        ROW_NUMBER() OVER (PARTITION BY sub.user_id ORDER BY (SELECT NULL)) AS pos " +
-                            "    FROM (" +
-                            "        SELECT user_id, jt.`value` " +
-                            "        FROM student " + //3
-                            "        CROSS JOIN JSON_TABLE( " +
-                            "            vector, " +
-                            "            '$[*]' COLUMNS ( " +
-                            "                `value` DECIMAL(10,2) PATH '$' " +
-                            "            ) " +
-                            "        ) AS jt " +
-                            "    ) AS sub " +
-                            ") svt ON t.user_id = svt.user_id " +
-                            "JOIN (" +
-                            "    SELECT " +
-                            "        `value` AS tvt_value, " +
-                            "        ROW_NUMBER() OVER () AS pos " +
-                            "    FROM JSON_TABLE( " +
-                            "        CAST('[1.0, 0.8, 1.6]' AS JSON), " +
-                            "        '$[*]' COLUMNS ( " +
-                            "            `value` DECIMAL(10,2) PATH '$' " +
-                            "        ) " +
-                            "    ) AS jt " +
-                            ") tvt ON svt.pos = tvt.pos " +
-                            "GROUP BY t.user_id " +
-                            "ORDER BY similarity DESC",
-            countQuery =
-                    "SELECT COUNT(*) FROM student t " +
-                            "WHERE 1=1 " +
-                            "AND (:subject IS NULL OR t.subject = :subject) " +
-                            "AND (:teachGrade IS NULL OR t.subject = :teachGrade)",
-            nativeQuery = true
-    )
-    Page<Student> findAndSortByVector(
-            @Param("teacherVector") List<Double> teacherVector, // 直接传递 List<Double>
-            @Param("subject") String subject,
-            @Param("teachGrade") String teachGrade,
-            Pageable pageable
-    );
+    List<Student> findAll();
+//    /**
+//     * 自定义查询接口，用于根据向量进行查询和排序
+//     * @param teacherVector 学生向量
+//     * @param subject  科目（可选）
+//     * @param teachGrade 年级（可选）
+//     * @param pageable 分页参数
+//     * @return 分页的教师列表
+//     */
+//    @Query(
+//            value =
+//                    "SELECT t.*, " +
+//                            "    SUM(tvt.tvt_value * svt.svt_value) / " +
+//                            "    (SQRT(SUM(tvt.tvt_value * tvt.tvt_value)) * SQRT(SUM(svt.svt_value * svt.svt_value))) AS similarity " +
+//                            "FROM ( " +
+//                            "    SELECT * " +
+//                            "    FROM student " +//1
+//                            "    WHERE 1=1 " +
+////                            "        AND (:subject IS NULL OR subject = :subject) " +
+////                            "        AND (:teachGrade IS NULL OR teach_grade = :teachGrade) " +
+//                            ") t " +
+//                            "JOIN (" +
+//                            "    SELECT " +
+//                            "        sub.user_id, " +
+//                            "        sub.`value` AS svt_value, " +//2
+//                            "        ROW_NUMBER() OVER (PARTITION BY sub.user_id ORDER BY (SELECT NULL)) AS pos " +
+//                            "    FROM (" +
+//                            "        SELECT user_id, jt.`value` " +
+//                            "        FROM student " + //3
+//                            "        CROSS JOIN JSON_TABLE( " +
+//                            "            vector, " +
+//                            "            '$[*]' COLUMNS ( " +
+//                            "                `value` DECIMAL(10,2) PATH '$' " +
+//                            "            ) " +
+//                            "        ) AS jt " +
+//                            "    ) AS sub " +
+//                            ") svt ON t.user_id = svt.user_id " +
+//                            "JOIN (" +
+//                            "    SELECT " +
+//                            "        `value` AS tvt_value, " +
+//                            "        ROW_NUMBER() OVER () AS pos " +
+//                            "    FROM JSON_TABLE( " +
+//                            "        CAST('[1.0, 0.8, 1.6]' AS JSON), " +
+//                            "        '$[*]' COLUMNS ( " +
+//                            "            `value` DECIMAL(10,2) PATH '$' " +
+//                            "        ) " +
+//                            "    ) AS jt " +
+//                            ") tvt ON svt.pos = tvt.pos " +
+//                            "GROUP BY t.user_id " +
+//                            "ORDER BY similarity DESC",
+//            countQuery =
+//                    "SELECT COUNT(*) FROM student t " +
+//                            "WHERE 1=1 " +
+//                            "AND (:subject IS NULL OR t.subject = :subject) " +
+//                            "AND (:teachGrade IS NULL OR t.subject = :teachGrade)",
+//            nativeQuery = true
+//    )
+//    Page<Student> findAndSortByVector(
+//            @Param("teacherVector") List<Double> teacherVector, // 直接传递 List<Double>
+//            @Param("subject") String subject,
+//            @Param("teachGrade") String teachGrade,
+//            Pageable pageable
+//    );
 }

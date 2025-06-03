@@ -1,10 +1,12 @@
 package org.tutorial.tutorial_platform.repository;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.tutorial.tutorial_platform.pojo.TeachGrade;
+
+
 import org.tutorial.tutorial_platform.pojo.Teacher;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -37,12 +39,9 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     /**
      * 根据科目和教授年级分页查询教师列表（不考虑性别）
      *
-     * @param subject 科目
-     * @param teachGrade 教授年级
-     * @param pageable 分页参数
      * @return 分页的教师列表
      */
-    Page<Teacher> findAllBySubjectAndTeachGrade(String subject, String teachGrade, Pageable pageable);
+    List<Teacher> findAll();
     /**
      * 自定义查询接口，用于根据向量进行查询和排序
      * @param studentVector 学生向量
@@ -51,6 +50,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
      * @param pageable 分页参数
      * @return 分页的教师列表
      */
+    /*
     @Query(
             value =
                     "SELECT t.*, " +
@@ -60,8 +60,8 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
                             "    SELECT * " +
                             "    FROM teacher " +
                             "    WHERE 1=1 " +
-//                            "        AND (:subject IS NULL OR subject = :subject) " +
-//                            "        AND (:teachGrade IS NULL OR teach_grade = :teachGrade) " +
+                            "        AND (:subject IS NULL OR subject = :subject) " +
+                            "        AND (:teachGrade IS NULL OR teach_grade = :teachGrade) " +
                             ") t " +
                             "JOIN (" +
                             "    SELECT " +
@@ -84,7 +84,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
                             "        `value` AS svt_value, " +
                             "        ROW_NUMBER() OVER () AS pos " +
                             "    FROM JSON_TABLE( " +
-                            "        CAST('[1.0, 0.8, 1.6]' AS JSON), " +
+                            "        :studentVector, " +
                             "        '$[*]' COLUMNS ( " +
                             "            `value` DECIMAL(10,2) PATH '$' " +
                             "        ) " +
@@ -98,13 +98,17 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
                             "AND (:subject IS NULL OR t.subject = :subject) " +
                             "AND (:teachGrade IS NULL OR t.teach_grade = :teachGrade)",
             nativeQuery = true
-    )
-    Page<Teacher> findAndSortByVector(
-            @Param("studentVector") List<Double> studentVector, // 直接传递 List<Double>
-            @Param("subject") String subject,
-            @Param("teachGrade") String teachGrade,
-            Pageable pageable
-    );
+    )*/
+
+
+
+//    Page<Teacher> findAndSortByVector(
+//            @Param("studentVector") String studentVector, // 直接传递 List<Double>
+//            @Param("subject") String subject,
+//            @Param("teachGrade") String teachGrade,
+//            Pageable pageable
+//    );
+
 }
 
 
