@@ -1,5 +1,6 @@
 package org.tutorial.tutorial_platform.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.tutorial.tutorial_platform.pojo.Student;
 import org.tutorial.tutorial_platform.pojo.Teacher;
 import java.util.List;
@@ -19,7 +20,7 @@ public interface AiService {
      * @param student 学生对象
      * @return 数值向量列表，如 [0.1, 0.5, 0.3]
      */
-    List<Double> getVectorFromAi(Student student);
+    List<Double> getVectorFromAi(Student student) throws JsonProcessingException;
 
     /**
      * 获取教师的 AI 向量表示（用于相似度匹配）
@@ -27,10 +28,17 @@ public interface AiService {
      * @param teacher 教师对象
      * @return 数值向量列表，如 [0.1, 0.5, 0.3]
      */
-    List<Double> getVectorFromAi(Teacher teacher);
+    List<Double> getVectorFromAi(Teacher teacher) throws JsonProcessingException;
 
 
 
+    /**
+     * 向 DeepSeek 发送请求并获取 AI 的回答
+     *
+     * @param question 用户输入的问题
+     * @return AI 返回的回答内容
+     */
+    String chat(String question,String prompt);
     /**
      * 向 DeepSeek 发送请求并获取 AI 的回答
      *

@@ -132,7 +132,19 @@ if __name__ == '__main__':
     main()
 ```
 
+ai有生成两个向量
+
+返回文字
+
+返回评价
+
+
+
+
+
 其他
+
+
 
 方法 findStudentsWithAi 在实现接口时抛出了受检异常 JsonProcessingException，但接口中未声明该异常，导致方法签名冲突。
 

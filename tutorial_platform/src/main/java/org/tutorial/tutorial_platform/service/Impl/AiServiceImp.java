@@ -1,5 +1,7 @@
 package org.tutorial.tutorial_platform.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -47,7 +49,7 @@ public class AiServiceImp implements AiService {
      * @return 数值向量列表，如 [0.1, 0.5, 0.3]
      */
     @Override
-    public List<Double> getVectorFromAi(Student student) {
+    public List<Double> getVectorFromAi(Student student) throws RuntimeException, JsonProcessingException {
         String prompt = buildStudentVectorPrompt(student);
         return callAiAndGetVector(prompt);
     }
@@ -59,18 +61,11 @@ public class AiServiceImp implements AiService {
      * @return 数值向量列表，如 [0.1, 0.5, 0.3]
      */
     @Override
-    public List<Double> getVectorFromAi(Teacher teacher) {
+    public List<Double> getVectorFromAi(Teacher teacher) throws RuntimeException, JsonProcessingException {
         String prompt = buildTeacherVectorPrompt(teacher);
         return callAiAndGetVector(prompt);
     }
 
-    /**
-     * 清理输入文本中的非法控制字符（如 \u0000-\u001F）
-     */
-    private String sanitizeInput(String input) {
-        if (input == null) return "";
-        return input.replaceAll("[\\x00-\\x1F\\x7F]", "");
-    }
 
     /**
      * 构建学生的 AI 向量提示词（只保留指定字段）
@@ -86,6 +81,7 @@ public class AiServiceImp implements AiService {
      * - 补充信息 (addition)
      */
     private String buildStudentVectorPrompt(Student student) {
+        //TODO更改提示词，优化
         return "请根据以下学生信息生成一个17维数值向量，按顺序对应下列维度，仅输出JSON数组：\n" +
                 "1. 性别特征（男=0.0，女=1.0）\n" +
                 "2. 教学经验强度（小一=0.0，高三=1.0）\n" +
@@ -173,111 +169,83 @@ public class AiServiceImp implements AiService {
     /**
      * 调用 AI 接口并获取向量结果（同步方法）
      *
-     * @param prompt 包含实体信息的提示词
+     * @param question 包含实体信息的提示词
      * @return 解析后的 Double 向量列表
      */
-    private List<Double> callAiAndGetVector(String prompt) {
-        try {
-            String aiResponse = chat(prompt).trim(); // 获取原始响应
+    private List<Double> callAiAndGetVector(String question) throws RuntimeException, JsonProcessingException {
+        //TODO实现prompt
+        String aiResponse = chat(question).trim(); // 获取原始响应
 
-            // 使用 Jackson 解析完整 JSON 响应
-            JsonNode rootNode = objectMapper.readTree(aiResponse);
+        // 使用 Jackson 解析完整 JSON 响应
+        JsonNode rootNode = objectMapper.readTree(aiResponse);
 
-            // 提取 content 字段内容（即 AI 返回的向量字符串）
-            JsonNode contentNode = rootNode.at("/choices/0/message/content");
-            if (contentNode == null || !contentNode.isTextual()) {
-                throw new RuntimeException("AI 返回中未找到有效的 content 字段");
-            }
-
-            String vectorStr = contentNode.asText().trim();
-
-            // 校验格式是否为 [ ... ]
-            if (!vectorStr.startsWith("[") || !vectorStr.endsWith("]")) {
-                throw new RuntimeException("AI 返回的向量格式错误：" + vectorStr);
-            }
-
-            // 解析为 Double 列表
-            return parseVector(vectorStr);
-
-        } catch (Exception e) {
-            log.error("调用 AI 生成向量失败", e);
-            throw new RuntimeException("调用 AI 生成向量失败", e);
+        // 提取 content 字段内容（即 AI 返回的向量字符串）
+        JsonNode contentNode = rootNode.at("/choices/0/message/content");
+        if (contentNode == null || !contentNode.isTextual()) {
+            throw new RuntimeException("AI 返回中未找到有效的 content 字段");
         }
+
+        String vectorStr = contentNode.asText().trim();
+
+        // 校验格式是否为 [ ... ]
+        if (!vectorStr.startsWith("[") || !vectorStr.endsWith("]")) {
+            throw new RuntimeException("AI 返回的向量格式错误：" + vectorStr);
+        }
+        List<Double> vector = objectMapper.readValue(vectorStr, new TypeReference<>() {});
+
+        return vector;
     }
 
     /**
      * 向 DeepSeek 发送请求并获取 AI 的回答
+     * 两个实现
      *
      * @param question 用户输入的问题
      * @return AI 返回的回答内容
      */
-    @Override
     public String chat(String question) {
-        try {
-            // 清洗输入文本中的非法字符
-            String safeQuestion = sanitizeInput(question);
-
-            // 构建系统消息和用户消息
-            Map<String, Object> messageSystem = Map.of("role", "system", "content", "You are a helpful assistant.");
-            Map<String, Object> messageUser = Map.of("role", "user", "content", safeQuestion);
-
-            // 构建完整的 JSON 请求体
-            Map<String, Object> requestBodyMap = Map.of(
-                    "model", "deepseek-chat",
-                    "messages", List.of(messageSystem, messageUser),
-                    "stream", false
-            );
-
-            // 序列化为 JSON 字符串
-            String jsonBody = objectMapper.writeValueAsString(requestBodyMap);
-
-            // 构造请求头
-            HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, buildHeaders());
-
-            // 发送 POST 请求并获取响应
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-                    BASE_URL + "/chat/completions",
-                    requestEntity,
-                    String.class
-            );
-
-            // 成功则返回响应内容
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
-                return responseEntity.getBody();
-            } else {
-                log.warn("AI 接口返回空结果");
-                return "[]"; // 默认空向量
-            }
-        } catch (Exception e) {
-            log.error("调用 DeepSeek API 失败: {}", e.getMessage(), e);
-            throw new RuntimeException("调用 DeepSeek API 失败", e);
-        }
+        return chat(question,"You are a helpful assistant.");
     }
+    public String chat(String question,String prompt) {
 
-    /**
-     * 构建 HTTP 请求头
-     * 包括认证 Token 和 Content-Type
-     */
-    private HttpHeaders buildHeaders() {
+        // 构造请求体
+        String requestBody = "{"
+                + "\"model\": \"deepseek-chat\","
+                + " \"messages\": ["
+                + "     {"
+                + "         \"role\": \"system\","
+                + "         \"content\": \"You are a helpful assistant.\""
+                + "     },"
+                + "     {"
+                + "         \"role\": \"user\","
+                + "         \"content\": \"" + question + "\""
+                + "     }"
+                + " ],"
+                + "\"stream\": false"
+                + "}";
+
+        // 构造请求头
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + API_KEY);
-        return headers;
+        headers.set("Authorization", "Bearer " + API_KEY); // 添加 API 密钥
+
+        // 创建 HttpEntity 对象
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        // 构造完整的 API URL
+        String apiUrl = BASE_URL + "/chat/completions"; // 指定完整的 API 端点
+
+        // 发起同步请求并获取响应
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+                apiUrl,
+                requestEntity,
+                String.class
+        );
+
+        // 获取响应体
+        return responseEntity.getBody();
     }
 
-    /**
-     * 将 AI 返回的字符串向量解析为 List<Double>
-     * 示例输入："[0.1, 0.5]"
-     * 输出：List<Double> [0.1, 0.5]
-     */
-    private List<Double> parseVector(String response) {
-        try {
-            return Arrays.asList(objectMapper.readValue(response, Double[].class));
-        } catch (Exception e) {
-            log.error("解析AI向量失败: {}", e.getMessage(), e);
-            throw new RuntimeException("解析AI向量失败", e);
-        }
-    }
 
     /**
      * 异步调用 AI 获取用户数据并保存
@@ -287,21 +255,7 @@ public class AiServiceImp implements AiService {
     @Override
     @Async
     public void fetchAiData(Long userId) {
-        String requestBody =
-                "{\"model\": \"deepseek-chat\", \"messages\": [{\"role\": \"system\",\"content\": \"You are a helpful assistant.\"},{\"role\": \"user\",\"content\": \"我如何选择一个合适的老师\"}], \"stream\": false}";
+        //TODO
 
-        try {
-            HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, buildHeaders());
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(BASE_URL + "/chat/completions", requestEntity, String.class);
-
-            if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                //TODO存储评价到评论数据库
-                log.info("用户 {} 的 AI 数据已获取: {}", userId, responseEntity.getBody());
-            } else {
-                log.warn("用户 {} 的 AI 数据请求失败", userId);
-            }
-        } catch (Exception e) {
-            log.error("调用 DeepSeek API 失败", e);
-        }
     }
 }

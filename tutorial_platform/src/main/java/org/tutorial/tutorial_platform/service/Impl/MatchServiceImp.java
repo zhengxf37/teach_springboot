@@ -1,5 +1,6 @@
 package org.tutorial.tutorial_platform.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -46,7 +47,7 @@ public class MatchServiceImp implements MatchService {
      */
     @Async
     @Override
-    public void saveWithVector(Long userId)  {
+    public void saveWithVector(Long userId) throws JsonProcessingException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));
         if (user == null) {
             throw new RuntimeException("用户不存在");
@@ -55,19 +56,18 @@ public class MatchServiceImp implements MatchService {
             Student student = studentRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
             // 调用 AI 接口获取该学生的向量表示
             //TODO 获取向量
-            List<Double> vector = Arrays.asList(1.0,1.8,5.6);
-            // 将向量转为字符串格式并设置到实体中
-//            String vectorStr = objectMapper.writeValueAsString(vector); // 转为字符串
-
+            List<Double> vector = aiService.getVectorFromAi(student);
+//            List<Double> vector = Arrays.asList(1.0,1.8,5.6);
             student.setVector(vector); // 存入数据库字段（varchar/text 类型）
             // 保存学生及其向量信息
             studentRepository.save(student);
         }else if (user.getUserType() == UserType.TEACHER) {
 
             Teacher teacher = teacherRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
+            List<Double> vector = aiService.getVectorFromAi(teacher);
             // 调用 AI 接口获取表示
-            List<Double> vector = Arrays.asList(1.0,1.8,5.6);
-            aiService.fetchAiData(userId);
+//            List<Double> vector = Arrays.asList(1.0,1.8,5.6);
+
             teacher.setVector(vector);
             teacherRepository.save(teacher);
 
