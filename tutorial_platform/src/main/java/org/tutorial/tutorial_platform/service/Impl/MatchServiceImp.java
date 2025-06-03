@@ -60,7 +60,6 @@ public class MatchServiceImp implements MatchService {
         if (user.getUserType() == UserType.STUDENT) {
             Student student = studentRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
             // 调用 AI 接口获取该学生的向量表示
-            //TODO 获取向量
             List<Double> vector = aiService.getVectorFromAi(student);
 //            List<Double> vector = Arrays.asList(1.0,1.8,5.6);
             student.setVector(vector); // 存入数据库字段（varchar/text 类型）
