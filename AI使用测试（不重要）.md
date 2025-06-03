@@ -132,3 +132,14 @@ if __name__ == '__main__':
     main()
 ```
 
+其他
+
+方法 findStudentsWithAi 在实现接口时抛出了受检异常 JsonProcessingException，但接口中未声明该异常，导致方法签名冲突。
+
+```
+eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyVHlwZSI6IlNUVURFTlQiLCJ1c2VySWQiOjYsInN1YiI6Inpob3VoaiIsImlhdCI6MTc0ODg3Mjk0NiwiZXhwIjoxNzQ4OTU5MzQ2fQ.iOUS9dLpLzBDTiQiI1me6d9vl2WWCP6k6LWAFYzJ7uM
+```
+
+```
+eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyVHlwZSI6IlRFQUNIRVIiLCJ1c2VySWQiOjcsInN1YiI6Inpob3VoajIiLCJpYXQiOjE3NDg4NzMyMzIsImV4cCI6MTc0ODk1OTYzMn0.YccBvDolgreYlVx07moKvtex97CJVOtAcRcn6rdI2sE
+```

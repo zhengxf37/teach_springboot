@@ -239,6 +239,7 @@ public class AiServiceImp implements AiService{
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(BASE_URL + "/chat/completions", requestEntity, String.class);
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                //TODO存储评价到评论数据库
                 log.info("用户 {} 的 AI 数据已获取: {}", userId, responseEntity.getBody());
             } else {
                 log.warn("用户 {} 的 AI 数据请求失败", userId);

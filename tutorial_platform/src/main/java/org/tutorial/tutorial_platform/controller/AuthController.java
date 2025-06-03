@@ -2,6 +2,7 @@ package org.tutorial.tutorial_platform.controller;
 
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,6 +26,7 @@ import org.tutorial.tutorial_platform.vo.AuthResponseVO;
  */
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j//终端输出日志
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -62,6 +64,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<AuthResponseVO> login(@Valid @RequestBody LoginDTO loginDTO){
+        log.info("登录，loginDTO: {}", loginDTO);
         return ResponseEntity.ok(authService.login(loginDTO));
     }
 

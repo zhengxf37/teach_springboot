@@ -1,5 +1,7 @@
 package org.tutorial.tutorial_platform.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,42 +14,55 @@ import org.tutorial.tutorial_platform.pojo.Teacher;
 import org.tutorial.tutorial_platform.service.MatchService;
 import org.tutorial.tutorial_platform.vo.MatchStudentVO;
 import org.tutorial.tutorial_platform.vo.MatchTeacherVO;
-
+/**
+ * MatchController - 匹配相关
+ * 包括学生与教师的向量保存、基于 AI 的排序推荐功能。
+ */
 @RestController
 @RequestMapping("/api/match")
 public class MatchController {
 
-    private final MatchService matchService;
-
-    // ✅ 使用构造函数注入
     @Autowired
-    public MatchController(MatchService matchService) {
-        this.matchService = matchService;
+    private MatchService matchService;
+
+
+
+    /**
+     * 保存带有向量的用户信息。
+     *
+     * @return 已保存的学生对象
+     */
+    @GetMapping("/save")
+    public ResponseEntity<String> saveWithVector(HttpServletRequest request) throws JsonProcessingException {
+
+        Long userId = (Long) request.getAttribute("userId");
+        matchService.saveWithVector(userId);
+        return ResponseEntity.ok("正在保存向量");
     }
 
-    // ✅ 新增路径：保存带向量的学生
-    @PostMapping("/student/vector")
-    public ResponseEntity<Student> saveStudentWithVector(@RequestBody Student student) {
-        Student saved = matchService.saveStudentWithVector(student);
-        return ResponseEntity.ok(saved);
+    /**
+     * 根据学生信息获取 AI 排序后的教师列表。
+     *
+     * @param matchStudentDTO 匹配学生数据传输对象
+     * @return 分页的教师匹配结果视图对象
+     */
+    @PostMapping("/teacher/ai")
+    public ResponseEntity<Page<MatchTeacherVO>> findTeachersWithAi(HttpServletRequest request,@RequestBody MatchStudentDTO matchStudentDTO) throws JsonProcessingException {
+        Long userId = (Long) request.getAttribute("userId");
+        matchStudentDTO.setStudentId(userId);
+        return ResponseEntity.ok(matchService.findTeachersWithAi( matchStudentDTO));
     }
 
-    // ✅ 新增路径：保存带向量的老师
-    @PostMapping("/teacher/vector")
-    public ResponseEntity<Teacher> saveTeacherWithVector(@RequestBody Teacher teacher) {
-        Teacher saved = matchService.saveTeacherWithVector(teacher);
-        return ResponseEntity.ok(saved);
-    }
-
-    // ✅ 获取 AI 排序后的教师列表
-    @PostMapping("/teachers/ai")
-    public ResponseEntity<Page<MatchTeacherVO>> findTeachersWithAi(@RequestBody MatchStudentDTO dto) {
-        return ResponseEntity.ok(matchService.findTeachersWithAiRanking(dto));
-    }
-
-    // ✅ 获取 AI 排序后的学生列表
-    @PostMapping("/students/ai")
-    public ResponseEntity<Page<MatchStudentVO>> findStudentsWithAi(@RequestBody MatchTeacherDTO dto) {
-        return ResponseEntity.ok(matchService.findStudentsWithAiRanking(dto));
+    /**
+     * 根据教师信息获取 AI 排序后的学生列表。
+     *
+     * @param matchTeacherDTO 匹配教师数据传输对象
+     * @return 分页的学生匹配结果视图对象
+     */
+    @PostMapping("/student/ai")
+    public ResponseEntity<Page<MatchStudentVO>> findStudentsWithAi(HttpServletRequest request,@RequestBody MatchTeacherDTO matchTeacherDTO) throws JsonProcessingException {
+        Long userId = (Long) request.getAttribute("userId");
+        matchTeacherDTO.setTeacherId(userId);
+        return ResponseEntity.ok(matchService.findStudentsWithAi(matchTeacherDTO));
     }
 }

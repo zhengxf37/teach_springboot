@@ -2,7 +2,10 @@ package org.tutorial.tutorial_platform.pojo;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Type;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Teacher -老师实体类
@@ -64,8 +67,6 @@ public class Teacher {
 
     @Column(name = "addition", columnDefinition = "TEXT NOT NULL")
     private String addition;
-
-    @Column(name = "vector", columnDefinition = "TEXT")
-    private String vector;
-
+    @Column(name = "vector", columnDefinition = "JSON")
+    private List<Double> vector; // 直接存储为 JSON 数组
 }

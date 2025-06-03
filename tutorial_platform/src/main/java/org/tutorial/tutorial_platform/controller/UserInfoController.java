@@ -1,6 +1,7 @@
 package org.tutorial.tutorial_platform.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,7 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping("/api/user")
+@Slf4j
 public class UserInfoController {
 
     @Autowired
@@ -48,6 +50,7 @@ public class UserInfoController {
     public ResponseEntity<UserInfoVO> getUserInfo(HttpServletRequest request) {
         // 从token中获取用户ID
         Long userId = (Long) request.getAttribute("userId");
+        log.info("查询用户信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.getUserInfo(userId));
     }
 
@@ -59,6 +62,7 @@ public class UserInfoController {
     @GetMapping("/info/student")
     public ResponseEntity<StudentInfoVO> getStudentInfo(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
+        log.info("查询学生信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.getStudentInfo(userId));
     }
 
@@ -70,6 +74,7 @@ public class UserInfoController {
     @GetMapping("/info/teacher")
     public ResponseEntity<TeacherInfoVO> getTeacherInfo(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
+        log.info("查询教师信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.getTeacherInfo(userId));
     }
 
@@ -88,6 +93,7 @@ public class UserInfoController {
         // 从token中获取用户ID
         Long userId = (Long) request.getAttribute("userId");
         userInfoUpdateDTO.setUserId(userId);
+        log.info("修改用户信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.updateUserInfo(userInfoUpdateDTO));
     }
     /**
@@ -110,6 +116,7 @@ public class UserInfoController {
         // 从token中获取用户ID
         Long userId = (Long) request.getAttribute("userId");
         teacherInfoUpdateDTO.setUserId(userId);
+        log.info("修改教师信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.updateTeacherInfo(teacherInfoUpdateDTO));
     }
 
@@ -126,6 +133,7 @@ public class UserInfoController {
         // 从token中获取用户ID
         Long userId = (Long) request.getAttribute("userId");
         studentInfoUpdateDTO.setUserId(userId);
+        log.info("修改学生信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.updateStudentInfo(studentInfoUpdateDTO));
     }
 

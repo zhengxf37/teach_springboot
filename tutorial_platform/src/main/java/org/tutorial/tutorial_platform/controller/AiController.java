@@ -40,7 +40,8 @@ public class AiController {
         return ResponseEntity.ok(aiService.chat(requestDTO.getPrompt()));
     }
     /**
-     * 异步处理数据，生成用户的评价，保存数据到数据库,使用python脚本
+     * ai评价文本
+     * 异步处理数据，生成用户的评价文本，保存数据到数据库,使用python脚本
      * 这个评价作为-1号用户给当前用户的评价，参考了用户的信息
      * @return
      */

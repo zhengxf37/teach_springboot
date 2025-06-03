@@ -1,5 +1,6 @@
 package org.tutorial.tutorial_platform.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -71,6 +72,11 @@ public class GlobalExceptionHandler {
     // 处理参数非法异常
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+    //字符串转换异常，匹配里的
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<String> handleJsonProcessingException(JsonProcessingException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

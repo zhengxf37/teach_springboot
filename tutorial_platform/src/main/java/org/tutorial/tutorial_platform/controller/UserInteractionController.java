@@ -102,12 +102,15 @@ public class UserInteractionController {
     /**
      * 查询评价
      * @param request 获取用户id
+     * @param id 评价对象id
      * @return 评价信息
      */
     @GetMapping("/queryjudge")
-    public ResponseEntity<List<UserCommentVO>> queryJudge(HttpServletRequest request){
+    public ResponseEntity<List<UserCommentVO>> queryJudge(HttpServletRequest request, @RequestParam Long id){
         Long userId = (Long) request.getAttribute("userId");
+        if(id != -1){
+            return ResponseEntity.ok(userInteractionService.queryJudge(id));
+        }
         return ResponseEntity.ok(userInteractionService.queryJudge(userId));
-
     }
 }

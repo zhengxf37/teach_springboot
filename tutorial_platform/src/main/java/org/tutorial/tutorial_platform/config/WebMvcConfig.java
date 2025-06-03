@@ -28,7 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)  // 注册自定义拦截器实例
-                .addPathPatterns("/api/**")  // 拦截所有API请求
+                .addPathPatterns("/**")  // 拦截所有API请求
                 .excludePathPatterns(        // 排除不需要认证的路径
                         "/api/auth/login",   // 登录接口
                         "/api/auth/register" // 注册接口
@@ -41,5 +41,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 允许的请求方法
                 .allowedHeaders("*") // 允许的请求头
                 .allowCredentials(true); // 是否允许发送 Cookie
+
     }
+
 } 

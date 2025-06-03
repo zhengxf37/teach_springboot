@@ -40,7 +40,7 @@ public interface AiService {
     String chat(String question);
 
     /**
-     * 异步调用 AI 获取用户数据并保存
+     * 异步调用 AI 获取用户评价并保存
      *
      * @param userId 用户 ID
      */

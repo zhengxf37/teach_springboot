@@ -41,7 +41,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         }
 
         // 1. 获取Header中名为token的字段值
-        String token = request.getHeader("token");
+        String token = request.getHeader("Token");
         if (token == null) {
             throw new TokenException("未提供有效的认证令牌!");  // 合法形式是"token"
         }

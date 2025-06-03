@@ -3,6 +3,8 @@ package org.tutorial.tutorial_platform.pojo;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.List;
+
 /**
  * 学生实体类
  * 和数据库对应
@@ -56,8 +58,8 @@ public class Student {
     @Column(name = "addition", columnDefinition = "TEXT NOT NULL")
     private String addition;
 
-    @Column(name = "vector", columnDefinition = "TEXT")
-    private String vector; // 用字符串保存 JSON 格式的向量
+    @Column(name = "vector", columnDefinition = "JSON")
+    private List<Double> vector; // 直接存储为 JSON 数组
 
 
 }
