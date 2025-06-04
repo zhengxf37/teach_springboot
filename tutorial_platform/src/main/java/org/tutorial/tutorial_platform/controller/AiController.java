@@ -1,5 +1,6 @@
 package org.tutorial.tutorial_platform.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class AiController {
      * @return
      */
     @GetMapping("/fetch-ai-data")
-    public ResponseEntity<String> fetchAidata(HttpServletRequest request) {
+    public ResponseEntity<String> fetchAidata(HttpServletRequest request) throws RuntimeException, JsonProcessingException {
         // 调用Service层方法，异步处理数据
         Long userId = (Long) request.getAttribute("userId");
         aiService.fetchAiData(userId);

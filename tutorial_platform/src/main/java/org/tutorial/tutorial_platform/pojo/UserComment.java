@@ -7,7 +7,7 @@ import lombok.Data;
  * 用户评论的存储
  */
 @Entity
-@Table(name = "user_comment")
+@Table(name = "user_comment",uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "from_id"}))
 @Data
 public class UserComment {
     @Id

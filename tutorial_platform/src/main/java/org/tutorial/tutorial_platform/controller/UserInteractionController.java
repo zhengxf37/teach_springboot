@@ -88,6 +88,16 @@ public class UserInteractionController {
 
     }
     /**
+     * 同意匹配
+     * @param request
+     * @return
+     */
+    @GetMapping("/agree")
+    public ResponseEntity<Boolean> agree(HttpServletRequest request){
+        Long userId = (Long) request.getAttribute("userId");
+        return ResponseEntity.ok(userInteractionService.agree(userId));
+    }
+    /**
      * 评价
      * @param request
      * @return

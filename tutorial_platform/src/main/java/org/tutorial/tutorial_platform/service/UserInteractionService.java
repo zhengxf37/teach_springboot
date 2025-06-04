@@ -37,7 +37,11 @@ public interface UserInteractionService {
      * @return
      */
     Boolean reject(Long userId);
-
+    /**
+     *  匹配成功
+     * @return
+     */
+    Boolean agree(Long userId);
     /**
      *  增加评价
      * @return

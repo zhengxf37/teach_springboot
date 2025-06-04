@@ -261,34 +261,53 @@ public class AiServiceImp implements AiService {
      *
      * @param userId 用户 ID
      */
-    @Override
     @Async
-    public void fetchAiData(Long userId) {
+    public void fetchAiData(Long userId) throws JsonProcessingException {
 
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));
         if (user == null) {
             throw new RuntimeException("用户不存在");
         }
+        String s;
         if (user.getUserType() == UserType.STUDENT) {
             Student student = studentRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
             // 调用 AI 接口获取该学生的评价
-            String s = comment(student);
-            s = chat(s);
-            userCommentRepository.save(new UserComment(userId, (long) -1,s));
+            s = comment(student);
 
 
         }else if (user.getUserType() == UserType.TEACHER) {
 
             Teacher teacher = teacherRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
             // 调用 AI 接口获取表示
-            String s = comment(teacher);
-            s = chat(s);
-            userCommentRepository.save(new UserComment(userId, (long) -1,s));
+            s = comment(teacher);
 
 
         }else{
             throw new RuntimeException("用户类型不存在");
+        }
+
+        String aiResponse = chat(s).trim(); // 获取原始响应
+
+        // 使用 Jackson 解析完整 JSON 响应
+        JsonNode rootNode = objectMapper.readTree(aiResponse);
+
+        // 提取 content 字段内容（即 AI 返回的向量字符串）
+        JsonNode contentNode = rootNode.at("/choices/0/message/content");
+        if (contentNode == null || !contentNode.isTextual()) {
+            throw new RuntimeException("AI 返回中未找到有效的 content 字段");
+        }
+
+        String ans = contentNode.asText().trim();
+
+        List<UserComment> existingComment = userCommentRepository.findByUserIdAndFromId(userId, (long) -1);
+        if (existingComment.size() > 0) {
+            UserComment comment = existingComment.get(0);
+            comment.setContent(ans);
+            userCommentRepository.save(comment);
+        } else {
+            UserComment comment = new UserComment(userId, (long)-1, ans);
+            userCommentRepository.save(comment);
         }
 
         log.info("ai保存评价成功id={}",userId);

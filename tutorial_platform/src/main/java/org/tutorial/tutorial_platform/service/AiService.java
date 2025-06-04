@@ -52,5 +52,5 @@ public interface AiService {
      *
      * @param userId 用户 ID
      */
-    void fetchAiData(Long userId);
+    void fetchAiData(Long userId) throws JsonProcessingException;
 }

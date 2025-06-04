@@ -1,5 +1,6 @@
 package org.tutorial.tutorial_platform.service.Impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tutorial.tutorial_platform.dto.JudgeUserDTO;
@@ -18,6 +19,7 @@ import java.util.List;
  * 用户交互服务实现类
  * 状态：：0-未公开，1-公开中，2-匹配中，3-被匹配中，4-拒绝，5-被拒绝，6-完成，7-申请方取消
  */
+@Slf4j
 @Service
 public class UserInteractionServiceImp implements UserInteractionService {
     @Autowired
@@ -50,7 +52,6 @@ public class UserInteractionServiceImp implements UserInteractionService {
         return true;
 
     }
-
     /**
      * 删除需求
      * @param userId 用户ID
@@ -92,7 +93,6 @@ public class UserInteractionServiceImp implements UserInteractionService {
                 });
         return userStatus.getStatus();
     }
-
     /**
      *  申请匹配
      *  @param userId 用户ID
@@ -113,7 +113,6 @@ public class UserInteractionServiceImp implements UserInteractionService {
         userStatusRepository.save(userStatus);
         return true;
     }
-
     /**
      *  拒绝匹配
      *  @param userId 用户ID
@@ -136,6 +135,27 @@ public class UserInteractionServiceImp implements UserInteractionService {
         userStatusRepository.save(userStatus);
 
         return true;
+    }
+    /**
+     *  同意匹配
+     * @param userId
+     * @return
+     */
+    @Override
+    public Boolean agree(Long userId) {
+        UserStatus userStatus = userStatusRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
+        UserStatus userStatus2 = userStatusRepository.findById(userStatus.getWantId())
+                .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
+        if (userStatus.getStatus() == 3) {
+            userStatus.setStatus(6);
+            userStatus2.setStatus(6);
+        }else {
+            log.info("用户状态码错误,不是被匹配状态");
+            return false;
+        }
+
+
     }
 
     /**
