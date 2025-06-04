@@ -274,6 +274,7 @@ public class AiServiceImp implements AiService {
             Student student = studentRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
             // 调用 AI 接口获取该学生的评价
             String s = comment(student);
+            s = chat(s);
             userCommentRepository.save(new UserComment(userId, (long) -1,s));
 
 
@@ -282,6 +283,7 @@ public class AiServiceImp implements AiService {
             Teacher teacher = teacherRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
             // 调用 AI 接口获取表示
             String s = comment(teacher);
+            s = chat(s);
             userCommentRepository.save(new UserComment(userId, (long) -1,s));
 
 
