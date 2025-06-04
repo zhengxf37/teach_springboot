@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 import org.tutorial.tutorial_platform.pojo.*;
 import org.tutorial.tutorial_platform.repository.StudentRepository;
@@ -45,8 +44,7 @@ public class AiServiceImp implements AiService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
-    @Autowired
-    private UserCommentRepository userCommentRepository;
+    private final UserCommentRepository userCommentRepository;
     // DeepSeek API 配置
     private static final String API_KEY = "sk-2cdaa628f72e496e9bd19ab75f9afb6a";
     private static final String BASE_URL = "https://api.deepseek.com";
@@ -111,15 +109,15 @@ public class AiServiceImp implements AiService {
                 "17. 开放性（保守=0.0，开放=1.0）" +
 
                 "学生信息如下：" +
-                "- 性别：" + student.getGender() + "" +
-                "- 年级：" + student.getGrade() + "" +
-                "- 科目：" + student.getSubject() + "" +
-                "- 地址：" + student.getAddress() + "" +
-                "- 手机号：" + student.getPhone() + "" +
-                "- 评分：" + student.getScore() + "" +
-                "- 爱好：" + student.getHobby() + "" +
-                "- 目标：" + student.getGoal() + "" +
-                "- 补充信息：" + student.getAddition() + "" +
+                "- 性别：" + student.getGender() +
+                "- 年级：" + student.getGrade() +
+                "- 科目：" + student.getSubject() +
+                "- 地址：" + student.getAddress() +
+                "- 手机号：" + student.getPhone() +
+                "- 评分：" + student.getScore() +
+                "- 爱好：" + student.getHobby() +
+                "- 目标：" + student.getGoal() +
+                "- 补充信息：" + student.getAddition() +
 
                 "输出要求：" +
                 "1. 严格输出一个包含17个浮点数的JSON数组，例如：[0.0, 0.4, 1.0, 0.0, 0.8, 0.5, 0.6, 0.9, 0.7, 0.85, 0.0, 1.0, 0.0, 1.0, 0.0, 0.5, 0.6]" +
@@ -160,14 +158,14 @@ public class AiServiceImp implements AiService {
                 "17. 开放性（保守=0.0，开放=1.0）" +
 
                 "教师信息如下：" +
-                "- 性别：" + teacher.getGender() + "" +
-                "- 教授年级：" + teacher.getTeachGrade() + "" +
-                "- 科目：" + teacher.getSubject() + "" +
-                "- 地址：" + teacher.getAddress() + "" +
-                "- 手机号：" + teacher.getPhone() + "" +
-                "- 评分：" + teacher.getScore() + "" +
-                "- 爱好：" + teacher.getHobby() + "" +
-                "- 补充信息：" + teacher.getAddition() + "" +
+                "- 性别：" + teacher.getGender() +
+                "- 教授年级：" + teacher.getTeachGrade() +
+                "- 科目：" + teacher.getSubject() +
+                "- 地址：" + teacher.getAddress() +
+                "- 手机号：" + teacher.getPhone() +
+                "- 评分：" + teacher.getScore() +
+                "- 爱好：" + teacher.getHobby() +
+                "- 补充信息：" + teacher.getAddition() +
 
                 "输出要求：" +
                 "1. 严格输出一个包含17个浮点数的JSON数组" +
@@ -183,26 +181,14 @@ public class AiServiceImp implements AiService {
      */
     private List<Double> callAiAndGetVector(String question) throws RuntimeException, JsonProcessingException {
         //TODO实现prompt
-        String aiResponse = chat(question).trim(); // 获取原始响应
-
-        // 使用 Jackson 解析完整 JSON 响应
-        JsonNode rootNode = objectMapper.readTree(aiResponse);
-
-        // 提取 content 字段内容（即 AI 返回的向量字符串）
-        JsonNode contentNode = rootNode.at("/choices/0/message/content");
-        if (contentNode == null || !contentNode.isTextual()) {
-            throw new RuntimeException("AI 返回中未找到有效的 content 字段");
-        }
-
-        String vectorStr = contentNode.asText().trim();
+        String vectorStr = chat(question);
 
         // 校验格式是否为 [ ... ]
         if (!vectorStr.startsWith("[") || !vectorStr.endsWith("]")) {
             throw new RuntimeException("AI 返回的向量格式错误：" + vectorStr);
         }
-        List<Double> vector = objectMapper.readValue(vectorStr, new TypeReference<>() {});
 
-        return vector;
+        return objectMapper.readValue(vectorStr, new TypeReference<>() {});
     }
 
     /**
@@ -212,10 +198,10 @@ public class AiServiceImp implements AiService {
      * @param question 用户输入的问题
      * @return AI 返回的回答内容
      */
-    public String chat(String question) {
+    public String chat(String question) throws JsonProcessingException {
         return chat(question,"You are a helpful assistant.");
     }
-    public String chat(String question,String prompt) {
+    public String chat(String question,String prompt) throws JsonProcessingException {
 
         // 构造请求体
         String requestBody = "{"
@@ -252,7 +238,22 @@ public class AiServiceImp implements AiService {
         );
 
         // 获取响应体
-        return responseEntity.getBody();
+//        return responseEntity.getBody();
+
+        assert responseEntity.getBody() != null;
+        String aiResponse = responseEntity.getBody().trim();
+
+
+        // 使用 Jackson 解析完整 JSON 响应
+        JsonNode rootNode = objectMapper.readTree(aiResponse);
+
+        // 提取 content 字段内容（即 AI 返回的向量字符串）
+        JsonNode contentNode = rootNode.at("/choices/0/message/content");
+        if (contentNode == null || !contentNode.isTextual()) {
+            throw new RuntimeException("AI 返回中未找到有效的 content 字段");
+        }
+
+        return contentNode.asText().trim();
     }
 
 
@@ -287,60 +288,51 @@ public class AiServiceImp implements AiService {
             throw new RuntimeException("用户类型不存在");
         }
 
-        String aiResponse = chat(s).trim(); // 获取原始响应
 
-        // 使用 Jackson 解析完整 JSON 响应
-        JsonNode rootNode = objectMapper.readTree(aiResponse);
 
-        // 提取 content 字段内容（即 AI 返回的向量字符串）
-        JsonNode contentNode = rootNode.at("/choices/0/message/content");
-        if (contentNode == null || !contentNode.isTextual()) {
-            throw new RuntimeException("AI 返回中未找到有效的 content 字段");
-        }
-
-        String ans = contentNode.asText().trim();
+        String ans = chat(s);
 
         List<UserComment> existingComment = userCommentRepository.findByUserIdAndFromId(userId, (long) -1);
-        if (existingComment.size() > 0) {
-            UserComment comment = existingComment.get(0);
+        UserComment comment;
+        if (!existingComment.isEmpty()) {
+            comment = existingComment.get(0);
             comment.setContent(ans);
-            userCommentRepository.save(comment);
         } else {
-            UserComment comment = new UserComment(userId, (long)-1, ans);
-            userCommentRepository.save(comment);
+            comment = new UserComment(userId, (long) -1, ans);
         }
+        userCommentRepository.save(comment);
 
         log.info("ai保存评价成功id={}",userId);
 
     }
     private String comment(Student student){
         return "学生信息如下：" +
-                "- 姓名：" + student.getName() + "" +
-                "- 性别：" + student.getGender() + "" +
-                "- 年级：" + student.getGrade() + "" +
-                "- 科目：" + student.getSubject() + "" +
-                "- 地址：" + student.getAddress() + "" +
-                "- 手机号：" + student.getPhone() + "" +
-                "- 评分：" +student.getScore() + "" +
-                "- 爱好：" + student.getHobby() + "" +
-                "- 目标：" + student.getGoal() + "" +
-                "- 补充信息：" + student.getAddition() + "" +
+                "- 姓名：" + student.getName() +
+                "- 性别：" + student.getGender() +
+                "- 年级：" + student.getGrade() +
+                "- 科目：" + student.getSubject() +
+                "- 地址：" + student.getAddress() +
+                "- 手机号：" + student.getPhone() +
+                "- 评分：" +student.getScore() +
+                "- 爱好：" + student.getHobby() +
+                "- 目标：" + student.getGoal() +
+                "- 补充信息：" + student.getAddition() +
                 "输出要求：评价文本，100字，只有文字和标点，不要表情包，分点等无关内容" ;//TODO更改提示词
 
     }
     private String comment(Teacher teacher){
         return "学生信息如下：" +
-                "- 姓名：" + teacher.getName() + "" +
-                "- 性别：" + teacher.getGender() + "" +
-                "- 年级：" + teacher.getTeachGrade() + "" +
-                "- 科目：" + teacher.getSubject() + "" +
-                "- 地址：" + teacher.getAddress() + "" +
-                "- 手机号：" + teacher.getPhone() + "" +
-                "- 评分：" +teacher.getScore() + "" +
-                "- 爱好：" + teacher.getHobby() + "" +
-                "- 教学经验：" + teacher.getExperience() + "" +
-                "- 教学学校：" + teacher.getSchool() + "" +
-                "- 补充信息：" + teacher.getAddition() + "" +
+                "- 姓名：" + teacher.getName() +
+                "- 性别：" + teacher.getGender() +
+                "- 年级：" + teacher.getTeachGrade() +
+                "- 科目：" + teacher.getSubject() +
+                "- 地址：" + teacher.getAddress() +
+                "- 手机号：" + teacher.getPhone() +
+                "- 评分：" +teacher.getScore() +
+                "- 爱好：" + teacher.getHobby() +
+                "- 教学经验：" + teacher.getExperience() +
+                "- 教学学校：" + teacher.getSchool() +
+                "- 补充信息：" + teacher.getAddition() +
                 "输出要求：评价文本，100字，只有文字和标点，不要表情包，分点等无关内容" ;
 //TODO 更改提示词
     }

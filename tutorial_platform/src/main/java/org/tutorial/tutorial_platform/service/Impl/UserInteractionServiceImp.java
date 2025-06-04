@@ -156,6 +156,7 @@ public class UserInteractionServiceImp implements UserInteractionService {
         }
 
 
+        return null;
     }
 
     /**
@@ -164,13 +165,21 @@ public class UserInteractionServiceImp implements UserInteractionService {
      * @return 更新结果
      */
     public Boolean judge(JudgeUserDTO judgeUserDTO){
-        UserComment userComment = new UserComment();
-        //评论者
-        userComment.setFromId(judgeUserDTO.getUserId());
-        //被评论者
-        userComment.setUserId(judgeUserDTO.getJudgeId());
-        userComment.setContent(judgeUserDTO.getContent());
-        userCommentRepository.save(userComment);
+        Long userId = judgeUserDTO.getUserId();
+        Long judgeId = judgeUserDTO.getJudgeId();
+        String ans = judgeUserDTO.getContent();
+        List<UserComment> existingComment = userCommentRepository.findByUserIdAndFromId(userId, judgeId);
+        if (existingComment.size() > 0) {
+            UserComment comment = existingComment.get(0);
+            comment.setContent(ans);
+            userCommentRepository.save(comment);
+        } else {
+            UserComment comment = new UserComment(userId, (long)-1, ans);
+            userCommentRepository.save(comment);
+        }
+
+        log.info("评价成功,被评价id={}",userId);
+
 
         return true;
     }
@@ -187,7 +196,7 @@ public class UserInteractionServiceImp implements UserInteractionService {
                         comment.getContent()
                 ))
                 .toList();
-
+        log.info("查询评价成功,用户id={}",userId);
         return vos;
     }
 

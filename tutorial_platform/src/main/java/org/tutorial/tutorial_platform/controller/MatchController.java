@@ -35,7 +35,7 @@ public class MatchController {
 
         Long userId = (Long) request.getAttribute("userId");
         matchService.saveWithVector(userId);
-        return ResponseEntity.ok("正在保存向量");
+        return ResponseEntity.ok("yes, saving vector");
     }
 
     /**

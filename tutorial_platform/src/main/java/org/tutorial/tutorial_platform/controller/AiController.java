@@ -22,26 +22,26 @@ public class AiController {
     private AiService aiService;
 
     /**
-     * 获取AI的回答
+     * 获取AI的回答,输入提问，返回答案
      * @param question
      * @return
      */
     @GetMapping("/ask")
-    public ResponseEntity<String> askQuestion(@RequestParam String question) {
+    public ResponseEntity<String> askQuestion(@RequestParam String question) throws JsonProcessingException {
         return ResponseEntity.ok(aiService.chat(question));
     }
 
     /**
-     * 获取AI的回答
+     * 获取AI的回答,输入提问，返回答案
      * @param requestDTO
      * @return
      */
     @PostMapping("/generate")
-    public ResponseEntity<String> generateFromJson(@RequestBody AiRequestDTO requestDTO) {
+    public ResponseEntity<String> generateFromJson(@RequestBody AiRequestDTO requestDTO) throws JsonProcessingException {
         return ResponseEntity.ok(aiService.chat(requestDTO.getPrompt()));
     }
     /**
-     * ai评价文本
+     * ai评价文本，生成-1号用户给当前用户的评价
      * 异步处理数据，生成用户的评价文本，保存数据到数据库,使用python脚本
      * 这个评价作为-1号用户给当前用户的评价，参考了用户的信息
      * @return
@@ -52,7 +52,7 @@ public class AiController {
         Long userId = (Long) request.getAttribute("userId");
         aiService.fetchAiData(userId);
         // 立即返回响应给前端
-        return ResponseEntity.ok("yes数据正在处理中，后端自动保存");
+        return ResponseEntity.ok("yes saving");
     }
 
 }

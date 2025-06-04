@@ -13,12 +13,10 @@ import java.util.List;
 /**
  * UserInteractionController-用户状态管理类
  * 功能：设置用户匹配进程的状态，添加评价
- *
  * 用户状态包括：
  * 用户id
  * 状态：：0-未公开，1-公开中，2-匹配中，3-被匹配中，4-拒绝，5-被拒绝，6-完成，7-申请方取消
  * 匹配对象id
- *
  * 用户评价：单独的函数和数据库
  * zhj
  */
@@ -98,7 +96,7 @@ public class UserInteractionController {
         return ResponseEntity.ok(userInteractionService.agree(userId));
     }
     /**
-     * 评价
+     * 评价，不关心id，要提供被评价的id
      * @param request
      * @return
      */
@@ -110,7 +108,7 @@ public class UserInteractionController {
 
     }
     /**
-     * 查询评价
+     * 查询评价,id=-1代表当前用户
      * @param request 获取用户id
      * @param id 评价对象id
      * @return 评价信息

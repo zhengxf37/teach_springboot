@@ -38,14 +38,14 @@ public interface AiService {
      * @param question 用户输入的问题
      * @return AI 返回的回答内容
      */
-    String chat(String question,String prompt);
+    String chat(String question,String prompt) throws JsonProcessingException;
     /**
      * 向 DeepSeek 发送请求并获取 AI 的回答
      *
      * @param question 用户输入的问题
      * @return AI 返回的回答内容
      */
-    String chat(String question);
+    String chat(String question) throws JsonProcessingException;
 
     /**
      * 异步调用 AI 获取用户评价并保存
