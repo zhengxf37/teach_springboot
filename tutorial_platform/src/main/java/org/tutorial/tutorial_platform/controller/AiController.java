@@ -51,7 +51,7 @@ public class AiController {
         Long userId = (Long) request.getAttribute("userId");
         aiService.fetchAiData(userId);
         // 立即返回响应给前端
-        return ResponseEntity.ok("数据正在处理中，后端自动保存");
+        return ResponseEntity.ok("yes数据正在处理中，后端自动保存");
     }
 
 }

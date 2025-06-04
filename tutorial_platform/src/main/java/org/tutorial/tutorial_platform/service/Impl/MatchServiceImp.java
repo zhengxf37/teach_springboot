@@ -1,11 +1,8 @@
 package org.tutorial.tutorial_platform.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -42,7 +39,6 @@ public class MatchServiceImp implements MatchService {
     private final UserRepository userRepository;
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
-    private final ObjectMapper objectMapper;
     private final AiService aiService;
 
     /**
@@ -92,7 +88,7 @@ public class MatchServiceImp implements MatchService {
      */
     @Override
     public Page<MatchStudentVO> findStudentsWithAi(MatchTeacherDTO matchTeacherDTO){
-        Long teacherId = matchTeacherDTO.getTeacherId();
+        Long teacherId = matchTeacherDTO.getUserId();
         Teacher teacher = teacherRepository.findByUserUserId(teacherId)
                 .orElseThrow(() -> new RuntimeException("教师不存在"));
         List<Double> teacherVector = teacher.getVector();
@@ -141,7 +137,7 @@ public class MatchServiceImp implements MatchService {
     public Page<MatchTeacherVO> findTeachersWithAi(MatchStudentDTO matchStudentDTO) throws JsonProcessingException {
 
         // 1获取目标学生的向量
-        Long studentId = matchStudentDTO.getStudentId();
+        Long studentId = matchStudentDTO.getUserId();
         //存储的是用户id
         Student student = studentRepository.findByUserUserId(studentId)
                 .orElseThrow(() -> new RuntimeException("学生不存在"));
@@ -156,9 +152,6 @@ public class MatchServiceImp implements MatchService {
                     // 匹配年级
                     boolean gradeMatch = matchStudentDTO.getGrade().equals("-1") ||
                             teacher.getTeachGrade().equals(matchStudentDTO.getGrade());
-                    log.info("teacher.getSubject():"+teacher.getSubject());
-                    log.info("teacher.getTeachGrade():"+teacher.getTeachGrade());
-                    log.info("match:"+(subjectMatch)+":"+gradeMatch);
                     return subjectMatch && gradeMatch;
                 })
                 .collect(Collectors.toList());
@@ -187,31 +180,13 @@ public class MatchServiceImp implements MatchService {
         }
         return new PageImpl<>(pagedContent, PageRequest.of(page, size), voList.size());
     }
-//        String studentVectorJson = objectMapper.writeValueAsString(student.getVector());
-//        log.info("开始查询老师");
-//        log.info("传入科目{}，年级{}向量{}",  matchStudentDTO.getSubject(), matchStudentDTO.getGrade(), studentVectorJson);
-        // 调用新方法（替换原有分页查询）
-//        Page<Teacher> teacherPage = teacherRepository.findAndSortByVector(
-//                studentVectorJson,
-//                matchStudentDTO.getSubject(),
-//                matchStudentDTO.getGrade(),
-//                PageRequest.of(matchStudentDTO.getPage(), matchStudentDTO.getSize())
-//        );
 
-
-//        log.info(String.valueOf(teacherPage.getTotalElements()));
-//        for (Teacher teacher : teacherPage) {
-//            log.info(teacher.getSubject());
-//        }
-//        // 转换 VO（保持原有逻辑）
-//        return teacherPage.map(teacher -> {
-//            MatchTeacherVO vo = new MatchTeacherVO(teacher);
-//
-//
-//            return vo;
-//        });
-//    }
-    //工具
+    /**
+     * 计算两个向量的相似度
+     * @param vecA 向量A
+     * @param vecB 向量B
+     * @return 相似度
+     */
     private double calculateSimilarity(List<Double> vecA, List<Double> vecB) {
         if (vecA == null || vecB == null || vecA.size() != vecB.size()) {
             return 0.0;

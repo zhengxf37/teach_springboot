@@ -9,8 +9,6 @@ import org.springframework.data.domain.Page;
 
 import org.tutorial.tutorial_platform.dto.MatchStudentDTO;
 import org.tutorial.tutorial_platform.dto.MatchTeacherDTO;
-import org.tutorial.tutorial_platform.pojo.Student;
-import org.tutorial.tutorial_platform.pojo.Teacher;
 import org.tutorial.tutorial_platform.service.MatchService;
 import org.tutorial.tutorial_platform.vo.MatchStudentVO;
 import org.tutorial.tutorial_platform.vo.MatchTeacherVO;
@@ -49,7 +47,7 @@ public class MatchController {
     @PostMapping("/teacher/ai")
     public ResponseEntity<Page<MatchTeacherVO>> findTeachersWithAi(HttpServletRequest request,@RequestBody MatchStudentDTO matchStudentDTO) throws JsonProcessingException {
         Long userId = (Long) request.getAttribute("userId");
-        matchStudentDTO.setStudentId(userId);
+        matchStudentDTO.setUserId(userId);
         return ResponseEntity.ok(matchService.findTeachersWithAi( matchStudentDTO));
     }
 
@@ -62,7 +60,7 @@ public class MatchController {
     @PostMapping("/student/ai")
     public ResponseEntity<Page<MatchStudentVO>> findStudentsWithAi(HttpServletRequest request,@RequestBody MatchTeacherDTO matchTeacherDTO) throws JsonProcessingException {
         Long userId = (Long) request.getAttribute("userId");
-        matchTeacherDTO.setTeacherId(userId);
+        matchTeacherDTO.setUserId(userId);
         return ResponseEntity.ok(matchService.findStudentsWithAi(matchTeacherDTO));
     }
 }

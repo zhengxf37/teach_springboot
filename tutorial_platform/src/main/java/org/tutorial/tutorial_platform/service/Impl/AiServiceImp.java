@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import org.tutorial.tutorial_platform.pojo.Student;
-import org.tutorial.tutorial_platform.pojo.Teacher;
+import org.tutorial.tutorial_platform.pojo.*;
+import org.tutorial.tutorial_platform.repository.StudentRepository;
+import org.tutorial.tutorial_platform.repository.TeacherRepository;
+import org.tutorial.tutorial_platform.repository.UserCommentRepository;
+import org.tutorial.tutorial_platform.repository.UserRepository;
 import org.tutorial.tutorial_platform.service.AiService;
 
 /**
@@ -37,7 +41,12 @@ public class AiServiceImp implements AiService {
 
     // Jackson ObjectMapper 用于解析 JSON 响应
     private final ObjectMapper objectMapper;
-
+    //数据库
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
+    @Autowired
+    private UserCommentRepository userCommentRepository;
     // DeepSeek API 配置
     private static final String API_KEY = "sk-2cdaa628f72e496e9bd19ab75f9afb6a";
     private static final String BASE_URL = "https://api.deepseek.com";
@@ -255,7 +264,63 @@ public class AiServiceImp implements AiService {
     @Override
     @Async
     public void fetchAiData(Long userId) {
-        //TODO
 
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        if (user.getUserType() == UserType.STUDENT) {
+            Student student = studentRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
+            // 调用 AI 接口获取该学生的评价
+            String s = comment(student);
+            userCommentRepository.save(new UserComment(userId, (long) -1,s));
+
+
+        }else if (user.getUserType() == UserType.TEACHER) {
+
+            Teacher teacher = teacherRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
+            // 调用 AI 接口获取表示
+            String s = comment(teacher);
+            userCommentRepository.save(new UserComment(userId, (long) -1,s));
+
+
+        }else{
+            throw new RuntimeException("用户类型不存在");
+        }
+
+        log.info("ai保存评价成功id={}",userId);
+
+    }
+    private String comment(Student student){
+        return "学生信息如下：" +
+                "- 姓名：" + student.getName() + "" +
+                "- 性别：" + student.getGender() + "" +
+                "- 年级：" + student.getGrade() + "" +
+                "- 科目：" + student.getSubject() + "" +
+                "- 地址：" + student.getAddress() + "" +
+                "- 手机号：" + student.getPhone() + "" +
+                "- 评分：" +student.getScore() + "" +
+                "- 爱好：" + student.getHobby() + "" +
+                "- 目标：" + student.getGoal() + "" +
+                "- 补充信息：" + student.getAddition() + "" +
+                "输出要求：评价文本，100字，只有文字和标点，不要表情包，分点等无关内容" ;//TODO更改提示词
+
+    }
+    private String comment(Teacher teacher){
+        return "学生信息如下：" +
+                "- 姓名：" + teacher.getName() + "" +
+                "- 性别：" + teacher.getGender() + "" +
+                "- 年级：" + teacher.getTeachGrade() + "" +
+                "- 科目：" + teacher.getSubject() + "" +
+                "- 地址：" + teacher.getAddress() + "" +
+                "- 手机号：" + teacher.getPhone() + "" +
+                "- 评分：" +teacher.getScore() + "" +
+                "- 爱好：" + teacher.getHobby() + "" +
+                "- 教学经验：" + teacher.getExperience() + "" +
+                "- 教学学校：" + teacher.getSchool() + "" +
+                "- 补充信息：" + teacher.getAddition() + "" +
+                "输出要求：评价文本，100字，只有文字和标点，不要表情包，分点等无关内容" ;
+//TODO 更改提示词
     }
 }

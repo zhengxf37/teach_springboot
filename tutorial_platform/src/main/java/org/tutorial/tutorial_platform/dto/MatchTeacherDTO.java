@@ -7,8 +7,8 @@ import lombok.Data;
  */
 @Data
 public class MatchTeacherDTO {
-    @NotNull(message = "teacherId 不能为空")
-    private Long teacherId;
+    @NotNull(message = "userId 不能为空")
+    private Long userId;
 
     @NotNull(message = "科目不能为空")
     private String subject;
