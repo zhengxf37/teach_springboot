@@ -202,7 +202,11 @@ public class ChatServiceImpl implements ChatService {
         ChatMessage savedMessage = chatMessageRepository.save(message);
 
         // 3. 更新会话的最后消息和时间
-        updateSessionLastMessage(messageDTO.getSessionId(),messageDTO.getContent(),message.getCreateTime());
+        String lastContent = messageDTO.getContent();
+        if (lastContent != null && lastContent.length() > 15) {
+            lastContent = lastContent.substring(0, 15); // 截取前15个字符
+        }
+        updateSessionLastMessage(messageDTO.getSessionId(),lastContent,message.getCreateTime());
 
         // 4. 将userSessionMapping表和UserTotalUnread表中对方的未读消息数+1
         Optional<UserSessionMapping> existingMapping = userSessionMappingRepository.findByUserIdAndSessionId(messageDTO.getReceiverId(),messageDTO.getSessionId());

@@ -32,7 +32,7 @@ public class ChatSession {
     private LocalDateTime createTime;
 
     // 会话最后一条消息
-    @Column(name = "last_message_content", length = 45)
+    @Column(name = "last_message_content", length = 15)
     private String lastMessageContent;
 
     // 会话最后一条消息发送时间
