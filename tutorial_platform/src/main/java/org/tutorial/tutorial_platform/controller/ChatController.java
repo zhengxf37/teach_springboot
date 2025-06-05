@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tutorial.tutorial_platform.dto.ChatMessageDTO;
-import org.tutorial.tutorial_platform.dto.GetSessionMsgDTO;
 import org.tutorial.tutorial_platform.service.ChatService;
 import org.tutorial.tutorial_platform.vo.ChatMessageVO;
 import org.tutorial.tutorial_platform.vo.ChatSessionVO;
@@ -88,31 +87,29 @@ public class ChatController {
     /**
      * 获取会话消息历史
      * @param request 网络请求
-     * @param getSessionMsgDTO json请求，包括sessionId，page和size
      * @return 消息列表
      */
     @GetMapping("/messages")
     public ResponseEntity<Page<ChatMessageVO>> getSessionMessages(
             HttpServletRequest request,
-            @Valid @RequestBody GetSessionMsgDTO getSessionMsgDTO) {
-
-        // 1. 从拦截器设置的request属性中获取当前用户
+            @RequestParam Long sessionId,          // 会话ID
+            @RequestParam(defaultValue = "0") int page,   // 页码，默认0
+            @RequestParam(defaultValue = "10") int size   // 每页条数，默认10
+    ) {
+        // 1. 获取当前用户ID
         Long curUserId = (Long) request.getAttribute("userId");
-
-        // 2. 构建分页请求（按时间倒序）,先倒序后分页
+        // 2. 构建分页请求（按时间倒序）
         Pageable pageable = PageRequest.of(
-                getSessionMsgDTO.getPage(),  // 数据库实际分页中，0表示第一页
-                getSessionMsgDTO.getSize(),
+                page,
+                size,
                 Sort.by("createTime").descending()
         );
-
         // 3. 调用服务层
         Page<ChatMessageVO> messages = chatService.getSessionMessages(
-                getSessionMsgDTO.getSessionId(),
+                sessionId,
                 curUserId,
                 pageable
         );
-
         return ResponseEntity.ok(messages);
     }
 
