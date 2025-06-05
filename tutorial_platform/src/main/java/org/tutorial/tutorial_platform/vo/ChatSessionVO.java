@@ -16,7 +16,7 @@ public class ChatSessionVO {
     private Long studentUserId;
     private String teacherName;
     private String studentName;
-    private LocalDateTime createTime;
+    private String createTime;
     private String lastMessageContent;
     private LocalDateTime lastMessageTime;
     private Integer unreadMsgCount;  // 针对当前用户返回的未读消息数
@@ -33,7 +33,7 @@ public class ChatSessionVO {
         this.sessionId = session.getSessionId();
         this.teacherUserId = session.getTeacherUserId();
         this.studentUserId = session.getStudentUserId();
-        this.createTime = session.getCreateTime();
+        this.createTime = formatLocalDateTime(session.getCreateTime()); // 调用格式化方法
         this.lastMessageContent = session.getLastMessageContent();
         this.lastMessageTime = session.getLastMessageTime();
         this.unreadMsgCount = unreadMsgCount;
@@ -47,5 +47,9 @@ public class ChatSessionVO {
                 .map(Student::getName)  // 从optional<Student>中自动解包（如果存在），然后从Student中提取name
                 .orElse("未知学生");  // 如果任何一步为null，返回默认值
     }
-
+    // 格式化 LocalDateTime 为字符串（例如："2023-01-01 12:00"）
+    private String formatLocalDateTime(LocalDateTime dateTime) {
+        if (dateTime == null) return "";
+        return dateTime.toString().replace("T", " ").substring(0, 16);
+    }
 } 
