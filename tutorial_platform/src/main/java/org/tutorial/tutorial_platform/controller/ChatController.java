@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tutorial.tutorial_platform.dto.ChatMessageDTO;
 import org.tutorial.tutorial_platform.dto.GetSessionMsgDTO;
-import org.tutorial.tutorial_platform.dto.PageDTO;
 import org.tutorial.tutorial_platform.service.ChatService;
 import org.tutorial.tutorial_platform.vo.ChatMessageVO;
 import org.tutorial.tutorial_platform.vo.ChatSessionVO;
@@ -51,23 +50,21 @@ public class ChatController {
     /**
      * 获取用户的会话列表
      * @param request 网络请求
-     * @param pageDTO 分页传输对象
      * @return 会话列表
      */
     @GetMapping("/sessions")
     public ResponseEntity<Page<ChatSessionVO>> getUserSessions(
             HttpServletRequest request,
-            @RequestBody PageDTO pageDTO) {
-        // 1. 从拦截器设置的request属性中获取当前用户ID
+            @RequestParam(defaultValue = "0") int page,      // 页码，默认为0
+            @RequestParam(defaultValue = "10") int size) {   // 每页条数，默认为10
+        // 1. 获取当前用户ID
         Long curUserId = (Long) request.getAttribute("userId");
         // 2. 构建分页参数
-        Pageable pageable = PageRequest.of(
-                pageDTO.getPage(),
-                pageDTO.getSize()
-        );
-        // 3. 调用服务层，返回结果
+        Pageable pageable = PageRequest.of(page, size);
+        // 3. 调用服务层
         return ResponseEntity.ok(chatService.getUserSessions(curUserId, pageable));
     }
+
 
     /**
      * 发送消息
