@@ -18,7 +18,7 @@ public class ChatSessionVO {
     private String studentName;
     private String createTime;
     private String lastMessageContent;
-    private LocalDateTime lastMessageTime;
+    private String lastMessageTime;
     private Integer unreadMsgCount;  // 针对当前用户返回的未读消息数
     // 构造函数
     public ChatSessionVO(ChatSession session,
@@ -35,7 +35,7 @@ public class ChatSessionVO {
         this.studentUserId = session.getStudentUserId();
         this.createTime = formatLocalDateTime(session.getCreateTime()); // 调用格式化方法
         this.lastMessageContent = session.getLastMessageContent();
-        this.lastMessageTime = session.getLastMessageTime();
+        this.lastMessageTime = formatLocalDateTime(session.getLastMessageTime());
         this.unreadMsgCount = unreadMsgCount;
         // 从教师仓库获取教师姓名
         this.teacherName = teacherRepository.findByUserUserId(session.getTeacherUserId())
