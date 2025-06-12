@@ -1,6 +1,7 @@
 package org.tutorial.tutorial_platform.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/file")
+@Slf4j
 public class FileUploadController {
 
     @Autowired
@@ -48,6 +50,7 @@ public class FileUploadController {
         Long userId = (Long) request.getAttribute("userId");
         // 调用service层处理文件上传
         List<String> fileUrls = fileUploadService.uploadFiles(userId, files);
+        log.info("上传文件成功，用户ID：{},返回{}", userId,  fileUrls);
         return ResponseEntity.ok(fileUrls);
     }
 
@@ -64,7 +67,8 @@ public class FileUploadController {
             ) throws IOException {
         // 从token中获取用户ID
         Long userId = (Long) request.getAttribute("userId");
-        String avatarUrl = fileUploadService.uploadAvatar(userId, file);
+        String avatarUrl = "http://localhost:8088"+fileUploadService.uploadAvatar(userId, file);
+        log.info("上传头像成功，访问URL：{}", avatarUrl);
         return ResponseEntity.ok(avatarUrl);
     }
     /**
@@ -73,12 +77,27 @@ public class FileUploadController {
      * @return 文件访问URL列表
      */
     @GetMapping("/list")
-    public ResponseEntity<List<String>> listUserFiles(HttpServletRequest request) {
+    public ResponseEntity<List<String>> listUserFiles(HttpServletRequest request,@RequestParam Long userId) {
         // 从token中获取用户ID
-        Long userId = (Long) request.getAttribute("userId");
+
+        if (userId == -1){
+            userId = (Long) request.getAttribute("userId");
+        }
         // 调用service层获取文件列表
         List<String> fileUrls = fileUploadService.listUserFiles(userId);
+        log.info("获取用户文件列表成功，用户ID：{},返回{}", userId,  fileUrls);
         return ResponseEntity.ok(fileUrls);
+    }
+    @GetMapping("/listavatar")
+    public ResponseEntity<String> listUserAvatar(HttpServletRequest request,@RequestParam Long userId) {
+        // 从token中获取用户ID
+         if (userId == -1){
+            userId = (Long) request.getAttribute("userId");
+        }
+        // 调用service层获取文件列表
+        String avatarUrl = "http://localhost:8088"+fileUploadService.listUserAvatar(userId);
+        log.info("获取用户头像成功，用户ID：{},返回{}", userId,  avatarUrl);
+        return ResponseEntity.ok(avatarUrl);
     }
 
 }

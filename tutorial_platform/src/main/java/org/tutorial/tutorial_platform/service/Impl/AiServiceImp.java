@@ -199,10 +199,18 @@ public class AiServiceImp implements AiService {
      * @return AI 返回的回答内容
      */
     public String chat(String question) throws JsonProcessingException {
+
         return chat(question,"You are a helpful assistant.");
     }
-    public String chat(String question,String prompt) throws JsonProcessingException {
+    private static String sanitizeString(String input) {
+        if (input == null) return "";
+        // 移除 ASCII 控制字符（\u0000 - \u001F）
+        return input.replaceAll("[\\u0000-\\u001F]", "");
+    }
 
+    public String chat(String question,String prompt) throws JsonProcessingException {
+        question = sanitizeString(question);
+        prompt = sanitizeString(prompt);
         // 构造请求体
         String requestBody = "{"
                 + "\"model\": \"deepseek-chat\","
@@ -252,7 +260,8 @@ public class AiServiceImp implements AiService {
         if (contentNode == null || !contentNode.isTextual()) {
             throw new RuntimeException("AI 返回中未找到有效的 content 字段");
         }
-
+        log.info("AI提问：{}\n{}", question,  prompt);
+        log.info("AI 响应：{}", contentNode.asText().trim());
         return contentNode.asText().trim();
     }
 

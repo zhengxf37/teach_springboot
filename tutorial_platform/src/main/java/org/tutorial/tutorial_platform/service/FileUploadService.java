@@ -46,5 +46,8 @@ public interface FileUploadService {
      * @throws IllegalArgumentException 当文件类型不正确时抛出
      */
     String uploadAvatar(Long userId, MultipartFile file) throws IOException;
-
+    /**
+     * 获取用户头像访问URL
+     */
+    String listUserAvatar(Long userId);
 }

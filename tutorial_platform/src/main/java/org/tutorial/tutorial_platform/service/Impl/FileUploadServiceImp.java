@@ -162,4 +162,30 @@ public class FileUploadServiceImp implements FileUploadService {
 
     }
 
+    @Override
+    public String listUserAvatar(Long userId) {
+        String fileUrls ;
+
+        // 1. 构建用户目录路径
+        File userDir = new File(uploadDir + File.separator + avatar());
+
+
+        // 2. 遍历目录下的所有文件
+        File[] files = userDir.listFiles();
+        String  fileUrl = "";
+        if (files != null) {
+            for (File file : files) {
+                String fileName = file.getName();
+                if (fileName.startsWith("avatar_" + userId)) {
+                    fileUrl = "/uploads/avatars/" + fileName;
+                    break;
+                }
+            }
+        }
+
+
+        return fileUrl;
+
+    }
+
 } 
