@@ -1,7 +1,11 @@
 package org.tutorial.tutorial_platform.dto;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.tutorial.tutorial_platform.pojo.TeachGrade;
+
 /**
  * 学生发送的匹配请求参数
  */
@@ -11,7 +15,8 @@ public class MatchTeacherDTO {
     private Long userId;
 
     @NotNull(message = "科目不能为空")
-    private String subject;
+    @Enumerated(EnumType.STRING)
+    private TeachGrade  subject;
 
     @NotNull(message = "年级不能为空")
     private String grade;

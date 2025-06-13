@@ -105,7 +105,7 @@ public class FileUploadServiceImp implements FileUploadService {
         if (files != null) {
             for (File file : files) {
                 String fileName = file.getName();
-                String fileUrl = "/uploads/" + userId + "/" + fileName;
+                String fileUrl = "http://localhost:8088"+"/uploads/" + userId + "/" + fileName;
                 fileUrls.add(fileUrl);
             }
         }
@@ -167,7 +167,7 @@ public class FileUploadServiceImp implements FileUploadService {
         String fileUrls ;
 
         // 1. 构建用户目录路径
-        File userDir = new File(uploadDir + File.separator + avatar());
+        File userDir = new File(uploadDir + File.separator + "avatars/");
 
 
         // 2. 遍历目录下的所有文件

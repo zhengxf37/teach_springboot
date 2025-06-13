@@ -44,7 +44,7 @@ public class MatchController {
      * @param matchStudentDTO 匹配学生数据传输对象
      * @return 分页的教师匹配结果视图对象
      */
-    @PostMapping("/teacher/ai")
+    @PostMapping("/teachers/ai")
     public ResponseEntity<Page<MatchTeacherVO>> findTeachersWithAi(HttpServletRequest request,@RequestBody MatchStudentDTO matchStudentDTO) throws JsonProcessingException {
         Long userId = (Long) request.getAttribute("userId");
         matchStudentDTO.setUserId(userId);
@@ -57,7 +57,7 @@ public class MatchController {
      * @param matchTeacherDTO 匹配教师数据传输对象
      * @return 分页的学生匹配结果视图对象
      */
-    @PostMapping("/student/ai")
+    @PostMapping("/students/ai")
     public ResponseEntity<Page<MatchStudentVO>> findStudentsWithAi(HttpServletRequest request,@RequestBody MatchTeacherDTO matchTeacherDTO) throws JsonProcessingException {
         Long userId = (Long) request.getAttribute("userId");
         matchTeacherDTO.setUserId(userId);
