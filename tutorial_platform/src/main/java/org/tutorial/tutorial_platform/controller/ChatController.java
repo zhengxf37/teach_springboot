@@ -37,7 +37,7 @@ public class ChatController {
     @PostMapping("/sessions")
     public ResponseEntity<ChatSessionVO> createOrEnterPrivateSession(
             HttpServletRequest request,
-            @RequestBody Long targetUserId) {
+            @RequestParam Long targetUserId) {
         // 1. 从认证信息中获取当前用户
         Long currentUserId = (Long) request.getAttribute("userId");
         // 2. 调用服务层处理
