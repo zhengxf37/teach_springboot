@@ -2,9 +2,9 @@ package org.tutorial.tutorial_platform.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.tutorial.tutorial_platform.pojo.Education;
+//import org.tutorial.tutorial_platform.pojo.Education;
 import org.tutorial.tutorial_platform.pojo.Gender;
-import org.tutorial.tutorial_platform.pojo.TeachGrade;
+//import org.tutorial.tutorial_platform.pojo.TeachGrade;
 
 /**
  * 教师信息更新DTO
@@ -24,10 +24,10 @@ public class TeacherInfoUpdateDTO {
     private Gender gender;
 
     @NotNull(message = "学历不能为空")
-    private Education education;
+    private String education;
 
     @NotNull(message = "教学年级不能为空")
-    private TeachGrade teachGrade;
+    private String teachGrade;
 
     @NotBlank(message = "科目不能为空")
     private String subject;

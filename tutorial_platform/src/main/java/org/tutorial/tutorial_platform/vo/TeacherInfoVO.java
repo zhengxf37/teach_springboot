@@ -1,9 +1,9 @@
 package org.tutorial.tutorial_platform.vo;
 
 import lombok.Data;
-import org.tutorial.tutorial_platform.pojo.Education;
+//import org.tutorial.tutorial_platform.pojo.Education;
 import org.tutorial.tutorial_platform.pojo.Gender;
-import org.tutorial.tutorial_platform.pojo.TeachGrade;
+//import org.tutorial.tutorial_platform.pojo.TeachGrade;
 import org.tutorial.tutorial_platform.pojo.Teacher;
 
 import java.math.BigDecimal;
@@ -20,8 +20,8 @@ import java.math.BigDecimal;
 public class TeacherInfoVO {
     private String name;
     private Gender gender;
-    private Education education;
-    private TeachGrade teachGrade;
+    private String education;
+    private String teachGrade;
     private String subject;
     private String address;
     private String phone;

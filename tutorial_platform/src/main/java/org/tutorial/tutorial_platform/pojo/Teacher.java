@@ -36,13 +36,13 @@ public class Teacher {
     @Column(name = "gender", nullable = false)
     private Gender gender;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "education", nullable = false)
-    private Education education;
+    private String education;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "teach_grade", nullable = false)
-    private TeachGrade teachGrade;
+    private String teachGrade;
 
     @Column(name = "subject", nullable = false, length = 30)
     private String subject;

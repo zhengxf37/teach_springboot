@@ -151,7 +151,7 @@ public class MatchServiceImp implements MatchService {
                             teacher.getSubject().equals(matchStudentDTO.getSubject());
                     // 匹配年级
                     boolean gradeMatch = matchStudentDTO.getGrade().equals("-1") ||
-                            teacher.getTeachGrade().equals(TeachGrade.valueOf(matchStudentDTO.getGrade()));
+                            teacher.getTeachGrade().equals(matchStudentDTO.getGrade());
                     return subjectMatch && gradeMatch;
                 })
                 .collect(Collectors.toList());
