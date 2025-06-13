@@ -57,11 +57,14 @@ public class UserInfoController {
      * @return
      */
     @GetMapping("/info/student")
-    public ResponseEntity<StudentInfoVO> getStudentInfo(HttpServletRequest request,@RequestParam Long userId) {
+    public ResponseEntity<StudentInfoVO> getStudentInfo(HttpServletRequest request,@RequestParam(required = false) Long userId) {
 //        Long userId = (Long) request.getAttribute("userId");
 //        if (userId != -1){
 //            userId = userId;
 //        }
+        if (userId == null) {
+            userId = (Long) request.getAttribute("userId");
+        }
         log.info("查询学生信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.getStudentInfo(userId));
     }
@@ -72,11 +75,14 @@ public class UserInfoController {
      * @return
      */
     @GetMapping("/info/teacher")
-    public ResponseEntity<TeacherInfoVO> getTeacherInfo(HttpServletRequest request,@RequestParam Long userId) {
+    public ResponseEntity<TeacherInfoVO> getTeacherInfo(HttpServletRequest request,@RequestParam(required = false) Long userId) {
 //        Long userId = (Long) request.getAttribute("userId");
 //        if (userId != -1){
 //            userId = userId;
 //        }
+        if (userId == null) {
+            userId = (Long) request.getAttribute("userId");
+        }
         log.info("查询教师信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.getTeacherInfo(userId));
     }

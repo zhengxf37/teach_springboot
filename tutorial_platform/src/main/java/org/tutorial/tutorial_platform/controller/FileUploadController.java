@@ -77,12 +77,13 @@ public class FileUploadController {
      * @return 文件访问URL列表
      */
     @GetMapping("/list")
-    public ResponseEntity<List<String>> listUserFiles(HttpServletRequest request,@RequestParam Long userId) {
+    public ResponseEntity<List<String>> listUserFiles(HttpServletRequest request,@RequestParam(required = false) Long userId) {
         // 从token中获取用户ID
-
-        if (userId == -1){
+        if (userId == null){
             userId = (Long) request.getAttribute("userId");
         }
+
+
         // 调用service层获取文件列表
         List<String> fileUrls = fileUploadService.listUserFiles(userId);
         log.info("获取用户文件列表成功，用户ID：{},返回{}", userId,  fileUrls);
