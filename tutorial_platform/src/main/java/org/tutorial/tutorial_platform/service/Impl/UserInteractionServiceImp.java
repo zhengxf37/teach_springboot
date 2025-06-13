@@ -168,17 +168,18 @@ public class UserInteractionServiceImp implements UserInteractionService {
         Long userId = judgeUserDTO.getUserId();
         Long judgeId = judgeUserDTO.getJudgeId();
         String ans = judgeUserDTO.getContent();
-        List<UserComment> existingComment = userCommentRepository.findByUserIdAndFromId(userId, judgeId);
+        List<UserComment> existingComment = userCommentRepository.findByUserIdAndFromId( judgeId,userId);
         if (existingComment.size() > 0) {
             UserComment comment = existingComment.get(0);
             comment.setContent(ans);
             userCommentRepository.save(comment);
         } else {
-            UserComment comment = new UserComment(userId, (long)-1, ans);
+            //TODO不是ai
+            UserComment comment = new UserComment(judgeId,userId, ans);
             userCommentRepository.save(comment);
         }
 
-        log.info("评价成功,被评价id={}",userId);
+        log.info("评价成功,评价id={}",userId);
 
 
         return true;

@@ -102,8 +102,8 @@ public class UserInteractionController {
      */
     @PostMapping("/judge")
     public ResponseEntity<Boolean> judge(HttpServletRequest request, @RequestBody JudgeUserDTO judgeUserDTO){
-        Long userId = (Long) request.getAttribute("userId");
-        judgeUserDTO.setJudgeId(userId);
+//        Long userId = (Long) request.getAttribute("userId");
+//        judgeUserDTO.setJudgeId(userId);
         return ResponseEntity.ok(userInteractionService.judge(judgeUserDTO));
 
     }

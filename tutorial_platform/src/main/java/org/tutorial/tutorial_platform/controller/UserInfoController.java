@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.tutorial.tutorial_platform.dto.StudentInfoUpdateDTO;
 import org.tutorial.tutorial_platform.dto.TeacherInfoUpdateDTO;
 import org.tutorial.tutorial_platform.dto.UserInfoUpdateDTO;
@@ -13,8 +12,6 @@ import org.tutorial.tutorial_platform.service.UserInfoService;
 import org.tutorial.tutorial_platform.vo.StudentInfoVO;
 import org.tutorial.tutorial_platform.vo.TeacherInfoVO;
 import org.tutorial.tutorial_platform.vo.UserInfoVO;
-
-import java.io.IOException;
 
 /**
  * UserInfoController - 用户信息管理控制器
@@ -60,8 +57,11 @@ public class UserInfoController {
      * @return
      */
     @GetMapping("/info/student")
-    public ResponseEntity<StudentInfoVO> getStudentInfo(HttpServletRequest request) {
-        Long userId = (Long) request.getAttribute("userId");
+    public ResponseEntity<StudentInfoVO> getStudentInfo(HttpServletRequest request,@RequestParam Long userId) {
+//        Long userId = (Long) request.getAttribute("userId");
+//        if (userId != -1){
+//            userId = userId;
+//        }
         log.info("查询学生信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.getStudentInfo(userId));
     }
@@ -72,8 +72,11 @@ public class UserInfoController {
      * @return
      */
     @GetMapping("/info/teacher")
-    public ResponseEntity<TeacherInfoVO> getTeacherInfo(HttpServletRequest request) {
-        Long userId = (Long) request.getAttribute("userId");
+    public ResponseEntity<TeacherInfoVO> getTeacherInfo(HttpServletRequest request,@RequestParam Long userId) {
+//        Long userId = (Long) request.getAttribute("userId");
+//        if (userId != -1){
+//            userId = userId;
+//        }
         log.info("查询教师信息，用户ID：{}", userId);
         return ResponseEntity.ok(userService.getTeacherInfo(userId));
     }
