@@ -21,6 +21,7 @@ import org.tutorial.tutorial_platform.repository.UserCommentRepository;
 import org.tutorial.tutorial_platform.repository.UserRepository;
 import org.tutorial.tutorial_platform.service.AiService;
 
+
 /**
  * AI 服务实现类，负责与第三方 AI 接口交互，生成学生和教师的特征向量。
  * 功能说明：
@@ -156,6 +157,7 @@ public class AiServiceImp implements AiService {
                 "15. 社交爱好（有=1.0，无=0.0）" +
                 "16. 情绪稳定性（波动大=0.0，稳定=1.0）" +
                 "17. 开放性（保守=0.0，开放=1.0）" +
+                "以上数字不需要严格为0/1，按照介绍输出0~1的一个小数" +
 
                 "教师信息如下：" +
                 "- 性别：" + teacher.getGender() +
@@ -184,8 +186,8 @@ public class AiServiceImp implements AiService {
         String vectorStr = chat(question);
 
         // 校验格式是否为 [ ... ]
-        if (!vectorStr.startsWith("[") || !vectorStr.endsWith("]")) {
-            throw new RuntimeException("AI 返回的向量格式错误：" + vectorStr);
+        while(!vectorStr.startsWith("[") || !vectorStr.endsWith("]")) {
+            vectorStr = chat(question);
         }
 
         return objectMapper.readValue(vectorStr, new TypeReference<>() {});
@@ -299,7 +301,7 @@ public class AiServiceImp implements AiService {
 
 
 
-        String ans = chat(s);
+        String ans = chat("评价这个人，分析他适合什么样的老师/学生，不用重复他的信息，大概100-200字，只要文字和标点，不要表情包，分点等无关内容",s );//TODO更改提示词
 
         List<UserComment> existingComment = userCommentRepository.findByUserIdAndFromId(userId, (long) -1);
         UserComment comment;
@@ -314,6 +316,31 @@ public class AiServiceImp implements AiService {
         log.info("ai保存评价成功id={}",userId);
 
     }
+
+    @Override
+    public String askWithData(String question, Long userId, Long anotherId) throws JsonProcessingException {
+        if (userId == null || anotherId == null) {
+            throw new RuntimeException("用户ID不能为空");
+        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));
+        Student student;
+        Teacher teacher;
+        if (user.getUserType() != UserType.STUDENT){
+            student = studentRepository.findByUserUserId(anotherId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
+            teacher = teacherRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
+
+        }else{
+            student = studentRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
+            teacher = teacherRepository.findByUserUserId(anotherId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
+
+        }
+
+        String prompt = comment(student)+comment(teacher);
+        return chat(question,prompt);
+
+
+    }
+
     private String comment(Student student){
         return "学生信息如下：" +
                 "- 姓名：" + student.getName() +
@@ -325,8 +352,7 @@ public class AiServiceImp implements AiService {
                 "- 评分：" +student.getScore() +
                 "- 爱好：" + student.getHobby() +
                 "- 目标：" + student.getGoal() +
-                "- 补充信息：" + student.getAddition() +
-                "输出要求：评价文本，100字，只有文字和标点，不要表情包，分点等无关内容" ;//TODO更改提示词
+                "- 补充信息：" + student.getAddition();
 
     }
     private String comment(Teacher teacher){
@@ -341,8 +367,8 @@ public class AiServiceImp implements AiService {
                 "- 爱好：" + teacher.getHobby() +
                 "- 教学经验：" + teacher.getExperience() +
                 "- 教学学校：" + teacher.getSchool() +
-                "- 补充信息：" + teacher.getAddition() +
-                "输出要求：评价文本，100字，只有文字和标点，不要表情包，分点等无关内容" ;
+                "- 补充信息：" + teacher.getAddition();
+
 //TODO 更改提示词
     }
 }
