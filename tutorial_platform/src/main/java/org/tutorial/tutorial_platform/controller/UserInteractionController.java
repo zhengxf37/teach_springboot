@@ -27,74 +27,74 @@ public class UserInteractionController {
     @Autowired
     private UserInteractionService userInteractionService;
 
-    /**
-     * 公开信息用于匹配
-     * @param request
-     * @return
-     */
-    @GetMapping("/publish")
-    public ResponseEntity<Boolean> publish(HttpServletRequest request){
-        Long userId = (Long) request.getAttribute("userId");
-        return ResponseEntity.ok(userInteractionService.publish(userId));
-
-    }
-    /**
-     * 删除需求
-     * @param request
-     * @return
-     */
-    @GetMapping("/delete")
-    public ResponseEntity<Boolean> delete(HttpServletRequest request){
-        Long userId = (Long) request.getAttribute("userId");
-        return ResponseEntity.ok(userInteractionService.delete(userId));
-
-
-    }
-    /**
-     * 查询需求
-     *
-     * @param request
-     * @return
-     */
-    @GetMapping("/query")
-    public ResponseEntity<Integer> query(HttpServletRequest request){
-        Long userId = (Long) request.getAttribute("userId");
-        return ResponseEntity.ok(userInteractionService.query(userId));
-    }
-
-    /**
-     * 请求进行匹配
-     * @param request
-     * @return
-     */
-    @GetMapping("/want")
-    public ResponseEntity<Boolean> want(HttpServletRequest request, @RequestParam Long wantId){
-        Long userId = (Long) request.getAttribute("userId");
-        return ResponseEntity.ok(userInteractionService.want(userId, wantId));
-
-
-    }
-    /**
-     * 拒绝匹配
-     * @param request
-     * @return
-     */
-    @GetMapping("/reject")
-    public ResponseEntity<Boolean> reject(HttpServletRequest request){
-        Long userId = (Long) request.getAttribute("userId");
-        return ResponseEntity.ok(userInteractionService.reject(userId));
-
-    }
-    /**
-     * 同意匹配
-     * @param request
-     * @return
-     */
-    @GetMapping("/agree")
-    public ResponseEntity<Boolean> agree(HttpServletRequest request){
-        Long userId = (Long) request.getAttribute("userId");
-        return ResponseEntity.ok(userInteractionService.agree(userId));
-    }
+//    /**
+//     * 公开信息用于匹配
+//     * @param request
+//     * @return
+//     */
+//    @GetMapping("/publish")
+//    public ResponseEntity<Boolean> publish(HttpServletRequest request){
+//        Long userId = (Long) request.getAttribute("userId");
+//        return ResponseEntity.ok(userInteractionService.publish(userId));
+//
+//    }
+//    /**
+//     * 删除需求
+//     * @param request
+//     * @return
+//     */
+//    @GetMapping("/delete")
+//    public ResponseEntity<Boolean> delete(HttpServletRequest request){
+//        Long userId = (Long) request.getAttribute("userId");
+//        return ResponseEntity.ok(userInteractionService.delete(userId));
+//
+//
+//    }
+//    /**
+//     * 查询需求
+//     *
+//     * @param request
+//     * @return
+//     */
+//    @GetMapping("/query")
+//    public ResponseEntity<Integer> query(HttpServletRequest request){
+//        Long userId = (Long) request.getAttribute("userId");
+//        return ResponseEntity.ok(userInteractionService.query(userId));
+//    }
+//
+//    /**
+//     * 请求进行匹配
+//     * @param request
+//     * @return
+//     */
+//    @GetMapping("/want")
+//    public ResponseEntity<Boolean> want(HttpServletRequest request, @RequestParam Long wantId){
+//        Long userId = (Long) request.getAttribute("userId");
+//        return ResponseEntity.ok(userInteractionService.want(userId, wantId));
+//
+//
+//    }
+//    /**
+//     * 拒绝匹配
+//     * @param request
+//     * @return
+//     */
+//    @GetMapping("/reject")
+//    public ResponseEntity<Boolean> reject(HttpServletRequest request){
+//        Long userId = (Long) request.getAttribute("userId");
+//        return ResponseEntity.ok(userInteractionService.reject(userId));
+//
+//    }
+//    /**
+//     * 同意匹配
+//     * @param request
+//     * @return
+//     */
+//    @GetMapping("/agree")
+//    public ResponseEntity<Boolean> agree(HttpServletRequest request){
+//        Long userId = (Long) request.getAttribute("userId");
+//        return ResponseEntity.ok(userInteractionService.agree(userId));
+//    }
     /**
      * 评价，不关心id，要提供被评价的id
      * @param request

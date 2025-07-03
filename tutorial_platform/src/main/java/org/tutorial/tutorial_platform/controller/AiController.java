@@ -41,26 +41,26 @@ public class AiController {
         return ResponseEntity.ok(aiService.chat(requestDTO.getPrompt()));
     }
 
-    /**
-     * 带双方信息的提问
-     * @param request
-     * @return
-     * @throws RuntimeException
-     * @throws JsonProcessingException
-     */
-    @GetMapping("/askwithdata")
-    public ResponseEntity<String> askQuestionWithData(HttpServletRequest request,
-                                                      @RequestParam Long anotherId,
-                                                      @RequestParam String Question
-                                                      ) throws RuntimeException, JsonProcessingException {
-
-        Long userId = (Long) request.getAttribute("userId");
-        if (Question==null||Question.equals("")||Question.length()<5){
-            Question = "分析这位学生和老师是否匹配";
-        }
-//        1.学生，2.老师
-        return ResponseEntity.ok(aiService.askWithData(Question,userId,anotherId));
-    }
+//    /**
+//     * 带双方信息的提问
+//     * @param request
+//     * @return
+//     * @throws RuntimeException
+//     * @throws JsonProcessingException
+//     */
+//    @GetMapping("/askwithdata")
+//    public ResponseEntity<String> askQuestionWithData(HttpServletRequest request,
+//                                                      @RequestParam Long anotherId,
+//                                                      @RequestParam String Question
+//                                                      ) throws RuntimeException, JsonProcessingException {
+//
+//        Long userId = (Long) request.getAttribute("userId");
+//        if (Question==null||Question.equals("")||Question.length()<5){
+//            Question = "分析这位学生和老师是否匹配";
+//        }
+////        1.学生，2.老师
+//        return ResponseEntity.ok(aiService.askWithData(Question,userId,anotherId));
+//    }
 
     /**
      * ai评价文本，生成-1号用户给当前用户的评价
