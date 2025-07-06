@@ -20,11 +20,11 @@
 
 
 
-![image-20250514214942054](./README.assets/image-20250514214942054.png)
+![image-20250514214942054](assets/image-20250514214942054.png)
 
 3
 
-![image-20250514215342931](./README.assets/image-20250514215342931.png)
+![image-20250514215342931](assets/image-20250514215342931.png)
 
 代码
 
@@ -36,11 +36,11 @@
 
 打开idea
 
-![image-20250514215609553](./README.assets/image-20250514215609553.png)
+![image-20250514215609553](assets/image-20250514215609553.png)
 
 测试
 
-![image-20250514220045859](./README.assets/image-20250514220045859.png)
+![image-20250514220045859](assets/image-20250514220045859.png)
 
 ## 技术栈
 
@@ -353,7 +353,6 @@ ResponseEntity.status(HttpStatus.FOUND)
 3. 使用适当的异常处理机制
 4. 实现日志记录
 5. 注意数据安全性
-6. 
 
 
 
