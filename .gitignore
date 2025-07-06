@@ -34,3 +34,6 @@ build/
 
 ### upload file in our project ###
 upload_data/
+
+### report###
+htmlReport/
