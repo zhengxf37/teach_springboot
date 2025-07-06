@@ -325,29 +325,29 @@ public class AiServiceImp implements AiService {
 
     }
 
-    @Override
-    public String askWithData(String question, Long userId, Long anotherId) throws JsonProcessingException {
-        if (userId == null || anotherId == null) {
-            throw new RuntimeException("用户ID不能为空");
-        }
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));
-        Student student;
-        Teacher teacher;
-        if (user.getUserType() != UserType.STUDENT){
-            student = studentRepository.findByUserUserId(anotherId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
-            teacher = teacherRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
-
-        }else{
-            student = studentRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
-            teacher = teacherRepository.findByUserUserId(anotherId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
-
-        }
-
-        String prompt = comment(student)+comment(teacher);
-        return chat(question,prompt);
-
-
-    }
+//    @Override
+//    public String askWithData(String question, Long userId, Long anotherId) throws JsonProcessingException {
+//        if (userId == null || anotherId == null) {
+//            throw new RuntimeException("用户ID不能为空");
+//        }
+//        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("用户不存在"));
+//        Student student;
+//        Teacher teacher;
+//        if (user.getUserType() != UserType.STUDENT){
+//            student = studentRepository.findByUserUserId(anotherId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
+//            teacher = teacherRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
+//
+//        }else{
+//            student = studentRepository.findByUserUserId(userId).orElseThrow(() -> new RuntimeException("学生信息不存在"));
+//            teacher = teacherRepository.findByUserUserId(anotherId).orElseThrow(() -> new RuntimeException("教师信息不存在"));
+//
+//        }
+//
+//        String prompt = comment(student)+comment(teacher);
+//        return chat(question,prompt);
+//
+//
+//    }
 
     private String comment(Student student){
         return "学生信息如下：" +

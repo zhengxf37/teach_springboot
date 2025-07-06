@@ -158,28 +158,23 @@ public class ChatServiceImpl implements ChatService {
         if(existingSession.isEmpty()) {
             throw new RuntimeException("当前用户并未参与此对话，无权删除");
         }
-        // 2. 删除会话
-        chatSessionRepository.deleteSessionBySessionId(longSessionId);
-        // 3. 删除与会话有关的所有消息
+        // 2. 删除与会话有关的所有消息
         chatMessageRepository.deleteMessageBySessionId(longSessionId);
-        // 4. 获取两个用户会话关联信息，方便更新用户未读消息数
-        List<UserSessionMapping> mappings = userSessionMappingRepository.findAllBySessionId(longSessionId);
-        if(mappings.isEmpty()) {
-            throw new RuntimeException("查找不到用户与会话的关联");
-        }
-        else if(mappings.size() != 2){
-            throw new RuntimeException("与会话关联的用户必须要是两个");
-        }
-        UserSessionMapping mapping1 = mappings.get(0);
-        UserSessionMapping mapping2 = mappings.get(1);
-        // 5. 删除双方用户和会话的映射关系
+        // 3. 删除双方用户和会话的映射关系
         userSessionMappingRepository.deleteMappingBySessionId(longSessionId);
-        // 6. 更新用户所有未读消息数
-        if(mapping1.getUnreadCount() > 0){
-            userTotalUnreadRepository.decrementTotalUnread(mapping1.getUserId(), mapping1.getUnreadCount());
-        }
-        if(mapping2.getUnreadCount() > 0){
-            userTotalUnreadRepository.decrementTotalUnread(mapping2.getUserId(), mapping2.getUnreadCount());
+        // 4. 删除会话
+        chatSessionRepository.deleteSessionBySessionId(longSessionId);
+        // 5. 获取两个用户会话关联信息，方便更新用户未读消息数
+        List<UserSessionMapping> mappings = userSessionMappingRepository.findAllBySessionId(longSessionId);
+        if(mappings.size() == 2){
+            UserSessionMapping mapping1 = mappings.get(0);
+            UserSessionMapping mapping2 = mappings.get(1);
+            if(mapping1.getUnreadCount() > 0){
+                userTotalUnreadRepository.decrementTotalUnread(mapping1.getUserId(), mapping1.getUnreadCount());
+            }
+            if(mapping2.getUnreadCount() > 0){
+                userTotalUnreadRepository.decrementTotalUnread(mapping2.getUserId(), mapping2.getUnreadCount());
+            }
         }
     }
 

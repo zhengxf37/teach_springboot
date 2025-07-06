@@ -103,11 +103,11 @@ public class MatchServiceImp implements MatchService {
                     return subjectMatch && gradeMatch;
                 })
                 .collect(Collectors.toList());
+        // 修改为降序排序，最相似的在前
         students.sort((s1, s2) -> {
-            return Double.compare(
-                    calculateSimilarity(teacherVector, s1.getVector()),
-                    calculateSimilarity(teacherVector, s2.getVector())
-            );
+            double sim1 = calculateSimilarity(teacherVector, s1.getVector());
+            double sim2 = calculateSimilarity(teacherVector, s2.getVector());
+            return Double.compare(sim2, sim1); // 降序
         });
         int page = matchTeacherDTO.getPage();
         int size = matchTeacherDTO.getSize();
@@ -135,7 +135,6 @@ public class MatchServiceImp implements MatchService {
      * @return 分页结果，包含按相似度排序的教师 VO 列表
      */
     public Page<MatchTeacherVO> findTeachersWithAi(MatchStudentDTO matchStudentDTO) throws JsonProcessingException {
-
         // 1获取目标学生的向量
         Long studentId = matchStudentDTO.getUserId();
         //存储的是用户id
@@ -155,7 +154,6 @@ public class MatchServiceImp implements MatchService {
                     return subjectMatch && gradeMatch;
                 })
                 .collect(Collectors.toList());
-
         // 3. 计算相似度并排序
         teachers.sort((t1, t2) -> {
             double sim1 = calculateSimilarity(studentVector, t1.getVector());

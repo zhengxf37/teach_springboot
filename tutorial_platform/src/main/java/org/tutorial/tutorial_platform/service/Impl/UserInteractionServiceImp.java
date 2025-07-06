@@ -33,131 +33,131 @@ public class UserInteractionServiceImp implements UserInteractionService {
      * @param userId 用户ID
      * @return 更新结果
      */
-    public Boolean publish(Long userId) {
-        // 1. 查询用户状态实体并报错
-        UserStatus userStatus = userStatusRepository.findById(userId)
-                .orElseGet(() -> {
-                    User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-                    UserStatus userStatus1 = new UserStatus();
-                    userStatus1.setUser(user);
-                    return userStatus1;
-                });
-        // 2. 更新用户信息
-        userStatus.setStatus(1);
-        userStatus.setWantId(0L);
-
-
-        // 3. 保存更新
-        userStatusRepository.save(userStatus);
-        return true;
-
-    }
-    /**
-     * 删除需求
-     * @param userId 用户ID
-     * @return 更新结果
-     */
-    public Boolean delete(Long userId){
-        // 1. 查询用户状态实体并报错
-        UserStatus userStatus = userStatusRepository.findById(userId)
-                .orElseGet(() -> {
-                    User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-                    UserStatus userStatus1 = new UserStatus();
-                    userStatus1.setUser(user);
-                    return userStatus1;
-                });
-        // 2. 更新用户信息
-        userStatus.setStatus(0);
-        userStatus.setWantId(0L);
-
-        // 3. 保存更新
-        userStatusRepository.save(userStatus);
-        return true;
-    }
-    /**
-     * 查询需求
-     *
-     * @param userId 用户ID
-     * @return 状态码
-     */
-    public Integer query(Long userId){
-        // 1. 查询用户状态实体并报错
-        UserStatus userStatus = userStatusRepository.findById(userId)
-                .orElseGet(() -> {
-                    User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-                    UserStatus userStatus1 = new UserStatus();
-                    userStatus1.setUser(user);
-                    userStatus1.setStatus(0);
-                    userStatus1.setWantId(0L);
-                    return userStatus1;
-                });
-        return userStatus.getStatus();
-    }
-    /**
-     *  申请匹配
-     *  @param userId 用户ID
-     * @return 更新结果
-     */
-    public Boolean want(Long userId, Long wantId){
-        //没有判断老师/学生，直接设置匹配对象
-        UserStatus userStatus = userStatusRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在"));
-        UserStatus userStatus2 = userStatusRepository.findById(wantId)
-                .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在"));
-        //申请匹配，状态码为2，被申请码为3
-        userStatus.setStatus(2);
-        userStatus.setWantId(wantId);
-        userStatus2.setStatus(3);
-        userStatus2.setWantId(userId);
-        userStatusRepository.save(userStatus2);
-        userStatusRepository.save(userStatus);
-        return true;
-    }
-    /**
-     *  拒绝匹配
-     *  @param userId 用户ID
-     * @return 更新结果
-     */
-    public Boolean reject(Long userId){
-        UserStatus userStatus = userStatusRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
-        UserStatus userStatus2 = userStatusRepository.findById(userStatus.getWantId())
-                .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
-        if (userStatus.getStatus() == 3) {
-
-            userStatus.setStatus(4);
-            userStatus2.setStatus(5);
-        }else{
-            userStatus.setStatus(7);
-            userStatus2.setStatus(7);
-        }
-        userStatusRepository.save(userStatus2);
-        userStatusRepository.save(userStatus);
-
-        return true;
-    }
-    /**
-     *  同意匹配
-     * @param userId
-     * @return
-     */
-    @Override
-    public Boolean agree(Long userId) {
-        UserStatus userStatus = userStatusRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
-        UserStatus userStatus2 = userStatusRepository.findById(userStatus.getWantId())
-                .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
-        if (userStatus.getStatus() == 3) {
-            userStatus.setStatus(6);
-            userStatus2.setStatus(6);
-        }else {
-            log.info("用户状态码错误,不是被匹配状态");
-            return false;
-        }
-
-
-        return null;
-    }
+//    public Boolean publish(Long userId) {
+//        // 1. 查询用户状态实体并报错
+//        UserStatus userStatus = userStatusRepository.findById(userId)
+//                .orElseGet(() -> {
+//                    User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+//                    UserStatus userStatus1 = new UserStatus();
+//                    userStatus1.setUser(user);
+//                    return userStatus1;
+//                });
+//        // 2. 更新用户信息
+//        userStatus.setStatus(1);
+//        userStatus.setWantId(0L);
+//
+//
+//        // 3. 保存更新
+//        userStatusRepository.save(userStatus);
+//        return true;
+//
+//    }
+//    /**
+//     * 删除需求
+//     * @param userId 用户ID
+//     * @return 更新结果
+//     */
+//    public Boolean delete(Long userId){
+//        // 1. 查询用户状态实体并报错
+//        UserStatus userStatus = userStatusRepository.findById(userId)
+//                .orElseGet(() -> {
+//                    User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+//                    UserStatus userStatus1 = new UserStatus();
+//                    userStatus1.setUser(user);
+//                    return userStatus1;
+//                });
+//        // 2. 更新用户信息
+//        userStatus.setStatus(0);
+//        userStatus.setWantId(0L);
+//
+//        // 3. 保存更新
+//        userStatusRepository.save(userStatus);
+//        return true;
+//    }
+//    /**
+//     * 查询需求
+//     *
+//     * @param userId 用户ID
+//     * @return 状态码
+//     */
+//    public Integer query(Long userId){
+//        // 1. 查询用户状态实体并报错
+//        UserStatus userStatus = userStatusRepository.findById(userId)
+//                .orElseGet(() -> {
+//                    User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+//                    UserStatus userStatus1 = new UserStatus();
+//                    userStatus1.setUser(user);
+//                    userStatus1.setStatus(0);
+//                    userStatus1.setWantId(0L);
+//                    return userStatus1;
+//                });
+//        return userStatus.getStatus();
+//    }
+//    /**
+//     *  申请匹配
+//     *  @param userId 用户ID
+//     * @return 更新结果
+//     */
+//    public Boolean want(Long userId, Long wantId){
+//        //没有判断老师/学生，直接设置匹配对象
+//        UserStatus userStatus = userStatusRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在"));
+//        UserStatus userStatus2 = userStatusRepository.findById(wantId)
+//                .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在"));
+//        //申请匹配，状态码为2，被申请码为3
+//        userStatus.setStatus(2);
+//        userStatus.setWantId(wantId);
+//        userStatus2.setStatus(3);
+//        userStatus2.setWantId(userId);
+//        userStatusRepository.save(userStatus2);
+//        userStatusRepository.save(userStatus);
+//        return true;
+//    }
+//    /**
+//     *  拒绝匹配
+//     *  @param userId 用户ID
+//     * @return 更新结果
+//     */
+//    public Boolean reject(Long userId){
+//        UserStatus userStatus = userStatusRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
+//        UserStatus userStatus2 = userStatusRepository.findById(userStatus.getWantId())
+//                .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
+//        if (userStatus.getStatus() == 3) {
+//
+//            userStatus.setStatus(4);
+//            userStatus2.setStatus(5);
+//        }else{
+//            userStatus.setStatus(7);
+//            userStatus2.setStatus(7);
+//        }
+//        userStatusRepository.save(userStatus2);
+//        userStatusRepository.save(userStatus);
+//
+//        return true;
+//    }
+//    /**
+//     *  同意匹配
+//     * @param userId
+//     * @return
+//     */
+//    @Override
+//    public Boolean agree(Long userId) {
+//        UserStatus userStatus = userStatusRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("被申请用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
+//        UserStatus userStatus2 = userStatusRepository.findById(userStatus.getWantId())
+//                .orElseThrow(() -> new RuntimeException("申请方用户状态信息不存在，请先公开用户来触发程序自行创建数据表"));
+//        if (userStatus.getStatus() == 3) {
+//            userStatus.setStatus(6);
+//            userStatus2.setStatus(6);
+//        }else {
+//            log.info("用户状态码错误,不是被匹配状态");
+//            return false;
+//        }
+//
+//
+//        return null;
+//    }
 
     /**
      *  增加评价
@@ -174,7 +174,6 @@ public class UserInteractionServiceImp implements UserInteractionService {
             comment.setContent(ans);
             userCommentRepository.save(comment);
         } else {
-            //TODO不是ai
             UserComment comment = new UserComment(judgeId,userId, ans);
             userCommentRepository.save(comment);
         }

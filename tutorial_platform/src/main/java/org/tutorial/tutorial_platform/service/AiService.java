@@ -53,9 +53,9 @@ public interface AiService {
      * @param userId 用户 ID
      */
     void fetchAiData(Long userId) throws JsonProcessingException;
-    /**
-     * 带双方信息的提问
-     *
-     */
-    String askWithData(String question, Long userId, Long anotherId) throws JsonProcessingException;
+//    /**
+//     * 带双方信息的提问
+//     *
+//     */
+//    String askWithData(String question, Long userId, Long anotherId) throws JsonProcessingException;
 }

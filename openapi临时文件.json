@@ -5,6 +5,91 @@
     "version" : "1.0"
   },
   "paths" : {
+    "/api/deepseek/ask" : {
+      "get" : {
+        "summary" : "获取AI的回答,输入提问，返回答案",
+        "description" : "获取AI的回答,输入提问，返回答案",
+        "parameters" : [ {
+          "name" : "question",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "description" : ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/deepseek/generate" : {
+      "post" : {
+        "summary" : "获取AI的回答,输入提问，返回答案",
+        "description" : "获取AI的回答,输入提问，返回答案",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "prompt" ],
+                "type" : "object",
+                "properties" : {
+                  "prompt" : {
+                    "maxLength" : 1000,
+                    "type" : "string",
+                    "description" : "用户输入的提示词（问题或指令）\n非空且长度限制在 1~1000 字符之间\n{\n  \"prompt\": \"请解释什么是机器学习？\"\n}"
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "description" : ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/deepseek/fetch-ai-data" : {
+      "get" : {
+        "summary" : "ai评价文本，生成-1号用户给当前用户的评价",
+        "description" : "ai评价文本，生成-1号用户给当前用户的评价",
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "description" : ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/register" : {
       "post" : {
         "summary" : "用户注册接口",
@@ -137,88 +222,208 @@
         }
       }
     },
-    "/api/match/teachers" : {
-      "post" : {
-        "summary" : "学生查找合适的老师",
-        "description" : "学生查找合适的老师",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "required" : [ "grade", "subject" ],
-                "type" : "object",
-                "properties" : {
-                  "subject" : {
-                    "type" : "string",
-                    "description" : ""
-                  },
-                  "grade" : {
-                    "type" : "string",
-                    "description" : ""
-                  },
-                  "minScore" : {
-                    "type" : "number",
-                    "description" : "默认最低评分",
-                    "default" : 4.5
-                  }
-                },
-                "description" : ""
-              }
-            }
+    "/api/chat/sessions" : {
+      "get" : {
+        "summary" : "获取用户的会话列表",
+        "description" : "获取用户的会话列表",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false,
+            "default" : "0"
           }
-        },
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false,
+            "default" : "10"
+          }
+        } ],
         "responses" : {
           "200" : {
-            "description" : "",
+            "description" : "会话列表",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "object",
-                    "properties" : {
-                      "userId" : {
-                        "type" : "integer",
-                        "description" : "",
-                        "format" : "int64"
-                      },
-                      "username" : {
-                        "type" : "string",
-                        "description" : ""
-                      },
-                      "gender" : {
-                        "type" : "string",
-                        "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
-                        "enum" : [ "MALE", "FEMALE", "OTHER" ]
-                      },
-                      "education" : {
-                        "type" : "string",
-                        "description" : "{BACHELOR=BACHELOR, MASTER=MASTER, DOCTOR=DOCTOR, OTHER=OTHER}",
-                        "enum" : [ "BACHELOR", "MASTER", "DOCTOR", "OTHER" ]
-                      },
-                      "teachGrade" : {
-                        "type" : "string",
-                        "description" : "{小学=小学, 初中=初中, 高中=高中}",
-                        "enum" : [ "小学", "初中", "高中" ]
-                      },
-                      "subject" : {
-                        "type" : "string",
-                        "description" : ""
-                      },
-                      "score" : {
-                        "type" : "number",
-                        "description" : ""
-                      },
-                      "experience" : {
-                        "type" : "integer",
-                        "description" : ""
-                      },
-                      "hobby" : {
-                        "type" : "string",
-                        "description" : ""
+                  "type" : "object",
+                  "properties" : {
+                    "content" : {
+                      "type" : "array",
+                      "description" : "",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "sessionId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "teacherUserId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "studentUserId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "teacherName" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "studentName" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "createTime" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "lastMessageContent" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "lastMessageTime" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "unreadMsgCount" : {
+                            "type" : "integer",
+                            "description" : "针对当前用户返回的未读消息数"
+                          }
+                        },
+                        "description" : "org.tutorial.tutorial_platform.vo.ChatSessionVO"
                       }
+                    },
+                    "pageable" : {
+                      "type" : "object",
+                      "properties" : {
+                        "paged" : {
+                          "type" : "boolean"
+                        },
+                        "unpaged" : {
+                          "type" : "boolean"
+                        },
+                        "pageNumber" : {
+                          "type" : "integer"
+                        },
+                        "pageSize" : {
+                          "type" : "integer"
+                        },
+                        "offset" : {
+                          "type" : "integer",
+                          "format" : "int64"
+                        },
+                        "sort" : {
+                          "type" : "array",
+                          "items" : {
+                            "type" : "object",
+                            "properties" : {
+                              "direction" : {
+                                "type" : "string",
+                                "description" : "{ASC=ASC, DESC=DESC}",
+                                "enum" : [ "ASC", "DESC" ]
+                              },
+                              "property" : {
+                                "type" : "string",
+                                "description" : ""
+                              },
+                              "ignoreCase" : {
+                                "type" : "boolean",
+                                "description" : ""
+                              },
+                              "nullHandling" : {
+                                "type" : "string",
+                                "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                                "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                              },
+                              "ascending" : {
+                                "type" : "boolean"
+                              },
+                              "descending" : {
+                                "type" : "boolean"
+                              }
+                            },
+                            "description" : "org.springframework.data.domain.Sort"
+                          }
+                        }
+                      },
+                      "description" : ""
+                    },
+                    "total" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "empty" : {
+                      "type" : "boolean"
+                    },
+                    "number" : {
+                      "type" : "integer"
+                    },
+                    "size" : {
+                      "type" : "integer"
+                    },
+                    "numberOfElements" : {
+                      "type" : "integer"
+                    },
+                    "sort" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "direction" : {
+                            "type" : "string",
+                            "description" : "{ASC=ASC, DESC=DESC}",
+                            "enum" : [ "ASC", "DESC" ]
+                          },
+                          "property" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "ignoreCase" : {
+                            "type" : "boolean",
+                            "description" : ""
+                          },
+                          "nullHandling" : {
+                            "type" : "string",
+                            "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                            "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                          },
+                          "ascending" : {
+                            "type" : "boolean"
+                          },
+                          "descending" : {
+                            "type" : "boolean"
+                          }
+                        },
+                        "description" : "org.springframework.data.domain.Sort"
+                      }
+                    },
+                    "first" : {
+                      "type" : "boolean"
+                    },
+                    "last" : {
+                      "type" : "boolean"
+                    },
+                    "totalPages" : {
+                      "type" : "integer"
+                    },
+                    "totalElements" : {
+                      "type" : "integer",
+                      "format" : "int64"
                     }
-                  }
+                  },
+                  "description" : "会话列表"
                 }
               }
             }
@@ -226,17 +431,300 @@
         }
       }
     },
-    "/api/match/students" : {
-      "post" : {
-        "summary" : "教师查找合适的学生",
-        "description" : "教师查找合适的学生",
+    "/api/chat/messages" : {
+      "get" : {
+        "summary" : "获取会话消息历史",
+        "description" : "获取会话消息历史",
+        "parameters" : [ {
+          "name" : "sessionId",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false,
+            "default" : "0"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false,
+            "default" : "10"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "消息列表",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "content" : {
+                      "type" : "array",
+                      "description" : "",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "messageId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "sessionId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "senderId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "receiverId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "senderName" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "receiverName" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "content" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "createTime" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "pos" : {
+                            "type" : "string",
+                            "description" : "\"left\" 或 \"right\"，用于标识消息显示位置"
+                          }
+                        },
+                        "description" : "org.tutorial.tutorial_platform.vo.ChatMessageVO"
+                      }
+                    },
+                    "pageable" : {
+                      "type" : "object",
+                      "properties" : {
+                        "paged" : {
+                          "type" : "boolean"
+                        },
+                        "unpaged" : {
+                          "type" : "boolean"
+                        },
+                        "pageNumber" : {
+                          "type" : "integer"
+                        },
+                        "pageSize" : {
+                          "type" : "integer"
+                        },
+                        "offset" : {
+                          "type" : "integer",
+                          "format" : "int64"
+                        },
+                        "sort" : {
+                          "type" : "array",
+                          "items" : {
+                            "type" : "object",
+                            "properties" : {
+                              "direction" : {
+                                "type" : "string",
+                                "description" : "{ASC=ASC, DESC=DESC}",
+                                "enum" : [ "ASC", "DESC" ]
+                              },
+                              "property" : {
+                                "type" : "string",
+                                "description" : ""
+                              },
+                              "ignoreCase" : {
+                                "type" : "boolean",
+                                "description" : ""
+                              },
+                              "nullHandling" : {
+                                "type" : "string",
+                                "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                                "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                              },
+                              "ascending" : {
+                                "type" : "boolean"
+                              },
+                              "descending" : {
+                                "type" : "boolean"
+                              }
+                            },
+                            "description" : "org.springframework.data.domain.Sort"
+                          }
+                        }
+                      },
+                      "description" : ""
+                    },
+                    "total" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "empty" : {
+                      "type" : "boolean"
+                    },
+                    "number" : {
+                      "type" : "integer"
+                    },
+                    "size" : {
+                      "type" : "integer"
+                    },
+                    "numberOfElements" : {
+                      "type" : "integer"
+                    },
+                    "sort" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "direction" : {
+                            "type" : "string",
+                            "description" : "{ASC=ASC, DESC=DESC}",
+                            "enum" : [ "ASC", "DESC" ]
+                          },
+                          "property" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "ignoreCase" : {
+                            "type" : "boolean",
+                            "description" : ""
+                          },
+                          "nullHandling" : {
+                            "type" : "string",
+                            "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                            "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                          },
+                          "ascending" : {
+                            "type" : "boolean"
+                          },
+                          "descending" : {
+                            "type" : "boolean"
+                          }
+                        },
+                        "description" : "org.springframework.data.domain.Sort"
+                      }
+                    },
+                    "first" : {
+                      "type" : "boolean"
+                    },
+                    "last" : {
+                      "type" : "boolean"
+                    },
+                    "totalPages" : {
+                      "type" : "integer"
+                    },
+                    "totalElements" : {
+                      "type" : "integer",
+                      "format" : "int64"
+                    }
+                  },
+                  "description" : "消息列表"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/UnreadMsgCount" : {
+      "get" : {
+        "summary" : "获取当前用户所有未读消息",
+        "description" : "获取当前用户所有未读消息",
+        "responses" : {
+          "200" : {
+            "description" : "当前用户未读消息数",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "integer",
+                  "description" : "当前用户未读消息数"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/deleteSession" : {
+      "delete" : {
+        "summary" : "删除会话",
+        "description" : "删除会话",
         "requestBody" : {
           "content" : {
             "application/json" : {
               "schema" : {
-                "required" : [ "grade", "subject" ],
+                "type" : "integer",
+                "description" : "要删除的会话Id"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "No Content"
+          }
+        }
+      }
+    },
+    "/api/match/save" : {
+      "get" : {
+        "summary" : "保存带有向量的用户信息。",
+        "description" : "保存带有向量的用户信息。",
+        "responses" : {
+          "200" : {
+            "description" : "已保存的学生对象",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "description" : "已保存的学生对象"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/match/teachers/ai" : {
+      "post" : {
+        "summary" : "根据学生信息获取 AI 排序后的教师列表。",
+        "description" : "根据学生信息获取 AI 排序后的教师列表。",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "grade", "subject", "userId" ],
                 "type" : "object",
                 "properties" : {
+                  "userId" : {
+                    "type" : "integer",
+                    "description" : "",
+                    "format" : "int64"
+                  },
                   "subject" : {
                     "type" : "string",
                     "description" : ""
@@ -249,59 +737,423 @@
                     "type" : "number",
                     "description" : "默认最低成绩",
                     "default" : 80.0
+                  },
+                  "page" : {
+                    "type" : "integer",
+                    "description" : "第几页，从0开始",
+                    "default" : 0
+                  },
+                  "size" : {
+                    "type" : "integer",
+                    "description" : "每页数量",
+                    "default" : 10
                   }
                 },
-                "description" : ""
+                "description" : "匹配学生数据传输对象"
               }
             }
           }
         },
         "responses" : {
           "200" : {
-            "description" : "",
+            "description" : "分页的教师匹配结果视图对象",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "object",
-                    "properties" : {
-                      "userId" : {
-                        "type" : "integer",
-                        "description" : "",
-                        "format" : "int64"
-                      },
-                      "username" : {
-                        "type" : "string",
-                        "description" : ""
-                      },
-                      "gender" : {
-                        "type" : "string",
-                        "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
-                        "enum" : [ "MALE", "FEMALE", "OTHER" ]
-                      },
-                      "grade" : {
-                        "type" : "string",
-                        "description" : ""
-                      },
-                      "subject" : {
-                        "type" : "string",
-                        "description" : ""
-                      },
-                      "score" : {
-                        "type" : "number",
-                        "description" : ""
-                      },
-                      "hobby" : {
-                        "type" : "string",
-                        "description" : ""
-                      },
-                      "goal" : {
-                        "type" : "string",
-                        "description" : ""
+                  "type" : "object",
+                  "properties" : {
+                    "content" : {
+                      "type" : "array",
+                      "description" : "",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "userId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "username" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "gender" : {
+                            "type" : "string",
+                            "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                            "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                          },
+                          "education" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "teachGrade" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "subject" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "score" : {
+                            "type" : "number",
+                            "description" : ""
+                          },
+                          "experience" : {
+                            "type" : "integer",
+                            "description" : ""
+                          },
+                          "hobby" : {
+                            "type" : "string",
+                            "description" : ""
+                          }
+                        },
+                        "description" : "org.tutorial.tutorial_platform.vo.MatchTeacherVO"
                       }
+                    },
+                    "pageable" : {
+                      "type" : "object",
+                      "properties" : {
+                        "paged" : {
+                          "type" : "boolean"
+                        },
+                        "unpaged" : {
+                          "type" : "boolean"
+                        },
+                        "pageNumber" : {
+                          "type" : "integer"
+                        },
+                        "pageSize" : {
+                          "type" : "integer"
+                        },
+                        "offset" : {
+                          "type" : "integer",
+                          "format" : "int64"
+                        },
+                        "sort" : {
+                          "type" : "array",
+                          "items" : {
+                            "type" : "object",
+                            "properties" : {
+                              "direction" : {
+                                "type" : "string",
+                                "description" : "{ASC=ASC, DESC=DESC}",
+                                "enum" : [ "ASC", "DESC" ]
+                              },
+                              "property" : {
+                                "type" : "string",
+                                "description" : ""
+                              },
+                              "ignoreCase" : {
+                                "type" : "boolean",
+                                "description" : ""
+                              },
+                              "nullHandling" : {
+                                "type" : "string",
+                                "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                                "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                              },
+                              "ascending" : {
+                                "type" : "boolean"
+                              },
+                              "descending" : {
+                                "type" : "boolean"
+                              }
+                            },
+                            "description" : "org.springframework.data.domain.Sort"
+                          }
+                        }
+                      },
+                      "description" : ""
+                    },
+                    "total" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "empty" : {
+                      "type" : "boolean"
+                    },
+                    "number" : {
+                      "type" : "integer"
+                    },
+                    "size" : {
+                      "type" : "integer"
+                    },
+                    "numberOfElements" : {
+                      "type" : "integer"
+                    },
+                    "sort" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "direction" : {
+                            "type" : "string",
+                            "description" : "{ASC=ASC, DESC=DESC}",
+                            "enum" : [ "ASC", "DESC" ]
+                          },
+                          "property" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "ignoreCase" : {
+                            "type" : "boolean",
+                            "description" : ""
+                          },
+                          "nullHandling" : {
+                            "type" : "string",
+                            "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                            "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                          },
+                          "ascending" : {
+                            "type" : "boolean"
+                          },
+                          "descending" : {
+                            "type" : "boolean"
+                          }
+                        },
+                        "description" : "org.springframework.data.domain.Sort"
+                      }
+                    },
+                    "first" : {
+                      "type" : "boolean"
+                    },
+                    "last" : {
+                      "type" : "boolean"
+                    },
+                    "totalPages" : {
+                      "type" : "integer"
+                    },
+                    "totalElements" : {
+                      "type" : "integer",
+                      "format" : "int64"
                     }
+                  },
+                  "description" : "分页的教师匹配结果视图对象"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/match/students/ai" : {
+      "post" : {
+        "summary" : "根据教师信息获取 AI 排序后的学生列表。",
+        "description" : "根据教师信息获取 AI 排序后的学生列表。",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "grade", "subject", "userId" ],
+                "type" : "object",
+                "properties" : {
+                  "userId" : {
+                    "type" : "integer",
+                    "description" : "",
+                    "format" : "int64"
+                  },
+                  "subject" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "grade" : {
+                    "type" : "string",
+                    "description" : ""
+                  },
+                  "minScore" : {
+                    "type" : "number",
+                    "description" : "默认最低评分",
+                    "default" : 4.5
+                  },
+                  "page" : {
+                    "type" : "integer",
+                    "description" : "第几页，从0开始",
+                    "default" : 0
+                  },
+                  "size" : {
+                    "type" : "integer",
+                    "description" : "每页数量",
+                    "default" : 10
                   }
+                },
+                "description" : "匹配教师数据传输对象"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "分页的学生匹配结果视图对象",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "content" : {
+                      "type" : "array",
+                      "description" : "",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "userId" : {
+                            "type" : "integer",
+                            "description" : "",
+                            "format" : "int64"
+                          },
+                          "username" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "gender" : {
+                            "type" : "string",
+                            "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+                            "enum" : [ "MALE", "FEMALE", "OTHER" ]
+                          },
+                          "grade" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "subject" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "score" : {
+                            "type" : "number",
+                            "description" : ""
+                          },
+                          "hobby" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "goal" : {
+                            "type" : "string",
+                            "description" : ""
+                          }
+                        },
+                        "description" : "org.tutorial.tutorial_platform.vo.MatchStudentVO"
+                      }
+                    },
+                    "pageable" : {
+                      "type" : "object",
+                      "properties" : {
+                        "paged" : {
+                          "type" : "boolean"
+                        },
+                        "unpaged" : {
+                          "type" : "boolean"
+                        },
+                        "pageNumber" : {
+                          "type" : "integer"
+                        },
+                        "pageSize" : {
+                          "type" : "integer"
+                        },
+                        "offset" : {
+                          "type" : "integer",
+                          "format" : "int64"
+                        },
+                        "sort" : {
+                          "type" : "array",
+                          "items" : {
+                            "type" : "object",
+                            "properties" : {
+                              "direction" : {
+                                "type" : "string",
+                                "description" : "{ASC=ASC, DESC=DESC}",
+                                "enum" : [ "ASC", "DESC" ]
+                              },
+                              "property" : {
+                                "type" : "string",
+                                "description" : ""
+                              },
+                              "ignoreCase" : {
+                                "type" : "boolean",
+                                "description" : ""
+                              },
+                              "nullHandling" : {
+                                "type" : "string",
+                                "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                                "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                              },
+                              "ascending" : {
+                                "type" : "boolean"
+                              },
+                              "descending" : {
+                                "type" : "boolean"
+                              }
+                            },
+                            "description" : "org.springframework.data.domain.Sort"
+                          }
+                        }
+                      },
+                      "description" : ""
+                    },
+                    "total" : {
+                      "type" : "integer",
+                      "description" : "",
+                      "format" : "int64"
+                    },
+                    "empty" : {
+                      "type" : "boolean"
+                    },
+                    "number" : {
+                      "type" : "integer"
+                    },
+                    "size" : {
+                      "type" : "integer"
+                    },
+                    "numberOfElements" : {
+                      "type" : "integer"
+                    },
+                    "sort" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "direction" : {
+                            "type" : "string",
+                            "description" : "{ASC=ASC, DESC=DESC}",
+                            "enum" : [ "ASC", "DESC" ]
+                          },
+                          "property" : {
+                            "type" : "string",
+                            "description" : ""
+                          },
+                          "ignoreCase" : {
+                            "type" : "boolean",
+                            "description" : ""
+                          },
+                          "nullHandling" : {
+                            "type" : "string",
+                            "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                            "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                          },
+                          "ascending" : {
+                            "type" : "boolean"
+                          },
+                          "descending" : {
+                            "type" : "boolean"
+                          }
+                        },
+                        "description" : "org.springframework.data.domain.Sort"
+                      }
+                    },
+                    "first" : {
+                      "type" : "boolean"
+                    },
+                    "last" : {
+                      "type" : "boolean"
+                    },
+                    "totalPages" : {
+                      "type" : "integer"
+                    },
+                    "totalElements" : {
+                      "type" : "integer",
+                      "format" : "int64"
+                    }
+                  },
+                  "description" : "分页的学生匹配结果视图对象"
                 }
               }
             }
@@ -355,6 +1207,16 @@
       "get" : {
         "summary" : "获取学生信息",
         "description" : "获取学生信息",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "",
@@ -363,6 +1225,10 @@
                 "schema" : {
                   "type" : "object",
                   "properties" : {
+                    "name" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
                     "gender" : {
                       "type" : "string",
                       "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
@@ -399,10 +1265,6 @@
                     "addition" : {
                       "type" : "string",
                       "description" : ""
-                    },
-                    "name" : {
-                      "type" : "string",
-                      "description" : ""
                     }
                   },
                   "description" : ""
@@ -417,6 +1279,16 @@
       "get" : {
         "summary" : "获取教师信息",
         "description" : "获取教师信息",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "",
@@ -425,6 +1297,10 @@
                 "schema" : {
                   "type" : "object",
                   "properties" : {
+                    "name" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
                     "gender" : {
                       "type" : "string",
                       "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
@@ -432,13 +1308,11 @@
                     },
                     "education" : {
                       "type" : "string",
-                      "description" : "{BACHELOR=BACHELOR, MASTER=MASTER, DOCTOR=DOCTOR, OTHER=OTHER}",
-                      "enum" : [ "BACHELOR", "MASTER", "DOCTOR", "OTHER" ]
+                      "description" : ""
                     },
                     "teachGrade" : {
                       "type" : "string",
-                      "description" : "{小学=小学, 初中=初中, 高中=高中}",
-                      "enum" : [ "小学", "初中", "高中" ]
+                      "description" : ""
                     },
                     "subject" : {
                       "type" : "string",
@@ -469,10 +1343,6 @@
                       "description" : ""
                     },
                     "addition" : {
-                      "type" : "string",
-                      "description" : ""
-                    },
-                    "name" : {
                       "type" : "string",
                       "description" : ""
                     }
@@ -583,6 +1453,11 @@
                     "description" : "",
                     "format" : "int64"
                   },
+                  "name" : {
+                    "maxLength" : 20,
+                    "type" : "string",
+                    "description" : ""
+                  },
                   "gender" : {
                     "type" : "string",
                     "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
@@ -590,13 +1465,11 @@
                   },
                   "education" : {
                     "type" : "string",
-                    "description" : "{BACHELOR=BACHELOR, MASTER=MASTER, DOCTOR=DOCTOR, OTHER=OTHER}",
-                    "enum" : [ "BACHELOR", "MASTER", "DOCTOR", "OTHER" ]
+                    "description" : ""
                   },
                   "teachGrade" : {
                     "type" : "string",
-                    "description" : "{小学=小学, 初中=初中, 高中=高中}",
-                    "enum" : [ "小学", "初中", "高中" ]
+                    "description" : ""
                   },
                   "subject" : {
                     "type" : "string",
@@ -629,11 +1502,6 @@
                   "addition" : {
                     "type" : "string",
                     "description" : ""
-                  },
-                  "name" : {
-                    "maxLength" : 20,
-                    "type" : "string",
-                    "description" : ""
                   }
                 },
                 "description" : "用户信息更新对象"
@@ -649,6 +1517,10 @@
                 "schema" : {
                   "type" : "object",
                   "properties" : {
+                    "name" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
                     "gender" : {
                       "type" : "string",
                       "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
@@ -656,13 +1528,11 @@
                     },
                     "education" : {
                       "type" : "string",
-                      "description" : "{BACHELOR=BACHELOR, MASTER=MASTER, DOCTOR=DOCTOR, OTHER=OTHER}",
-                      "enum" : [ "BACHELOR", "MASTER", "DOCTOR", "OTHER" ]
+                      "description" : ""
                     },
                     "teachGrade" : {
                       "type" : "string",
-                      "description" : "{小学=小学, 初中=初中, 高中=高中}",
-                      "enum" : [ "小学", "初中", "高中" ]
+                      "description" : ""
                     },
                     "subject" : {
                       "type" : "string",
@@ -695,10 +1565,6 @@
                     "addition" : {
                       "type" : "string",
                       "description" : ""
-                    },
-                    "name" : {
-                      "type" : "string",
-                      "description" : ""
                     }
                   },
                   "description" : "老师信息响应对象\n 示范POST\n {\n   \"gender\": \"女\",\n   \"education\": \"硕士\",\n   \"teachGrade\": \"初中\",\n   \"subject\": \"物理\"\n }"
@@ -711,8 +1577,8 @@
     },
     "/api/user/update/student" : {
       "post" : {
-        "summary" : "修改学生信息",
-        "description" : "修改学生信息",
+        "summary" : "修改学生个人信息接口",
+        "description" : "修改学生个人信息接口",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -724,6 +1590,11 @@
                     "type" : "integer",
                     "description" : "",
                     "format" : "int64"
+                  },
+                  "name" : {
+                    "maxLength" : 20,
+                    "type" : "string",
+                    "description" : ""
                   },
                   "gender" : {
                     "type" : "string",
@@ -761,11 +1632,6 @@
                   "addition" : {
                     "type" : "string",
                     "description" : ""
-                  },
-                  "name" : {
-                    "maxLength" : 20,
-                    "type" : "string",
-                    "description" : ""
                   }
                 },
                 "description" : ""
@@ -781,6 +1647,10 @@
                 "schema" : {
                   "type" : "object",
                   "properties" : {
+                    "name" : {
+                      "type" : "string",
+                      "description" : ""
+                    },
                     "gender" : {
                       "type" : "string",
                       "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
@@ -815,10 +1685,6 @@
                       "description" : ""
                     },
                     "addition" : {
-                      "type" : "string",
-                      "description" : ""
-                    },
-                    "name" : {
                       "type" : "string",
                       "description" : ""
                     }
@@ -912,6 +1778,16 @@
       "get" : {
         "summary" : "获取用户文件列表接口",
         "description" : "获取用户文件列表接口",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "query",
+          "description" : "",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "文件访问URL列表",
@@ -929,7 +1805,387 @@
           }
         }
       }
+    },
+    "/api/file/listavatar" : {
+      "get" : {
+        "summary" : "listUserAvatar",
+        "description" : "listUserAvatar",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "query",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/interaction/judge" : {
+      "post" : {
+        "summary" : "评价，不关心id，要提供被评价的id",
+        "description" : "评价，不关心id，要提供被评价的id",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "content", "judgeId" ],
+                "type" : "object",
+                "properties" : {
+                  "userId" : {
+                    "type" : "integer",
+                    "description" : "当前用户",
+                    "format" : "int64"
+                  },
+                  "judgeId" : {
+                    "type" : "integer",
+                    "description" : "评价对象",
+                    "format" : "int64"
+                  },
+                  "content" : {
+                    "type" : "string",
+                    "description" : ""
+                  }
+                },
+                "description" : ""
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "boolean",
+                  "description" : ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/interaction/queryjudge" : {
+      "get" : {
+        "summary" : "查询评价,id=-1代表当前用户",
+        "description" : "查询评价,id=-1代表当前用户",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "评价对象id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "nullable" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "评价信息",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "description" : "评价信息",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "fromId" : {
+                        "type" : "integer",
+                        "description" : "",
+                        "format" : "int64"
+                      },
+                      "content" : {
+                        "type" : "string",
+                        "description" : ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
-  "components" : { }
+  "components" : {
+    "schemas" : {
+      "org.tutorial.tutorial_platform.vo.ChatSessionVO" : {
+        "type" : "object",
+        "properties" : {
+          "sessionId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "teacherUserId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "studentUserId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "teacherName" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "studentName" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "createTime" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "lastMessageContent" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "lastMessageTime" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "unreadMsgCount" : {
+            "type" : "integer",
+            "description" : "针对当前用户返回的未读消息数"
+          }
+        },
+        "description" : "org.tutorial.tutorial_platform.vo.ChatSessionVO"
+      },
+      "org.springframework.data.domain.Sort" : {
+        "type" : "object",
+        "properties" : {
+          "direction" : {
+            "type" : "string",
+            "description" : "{ASC=ASC, DESC=DESC}",
+            "enum" : [ "ASC", "DESC" ]
+          },
+          "property" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "ignoreCase" : {
+            "type" : "boolean",
+            "description" : ""
+          },
+          "nullHandling" : {
+            "type" : "string",
+            "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+            "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+          },
+          "ascending" : {
+            "type" : "boolean"
+          },
+          "descending" : {
+            "type" : "boolean"
+          }
+        },
+        "description" : "org.springframework.data.domain.Sort"
+      },
+      "org.springframework.data.domain.Pageable" : {
+        "type" : "object",
+        "properties" : {
+          "paged" : {
+            "type" : "boolean"
+          },
+          "unpaged" : {
+            "type" : "boolean"
+          },
+          "pageNumber" : {
+            "type" : "integer"
+          },
+          "pageSize" : {
+            "type" : "integer"
+          },
+          "offset" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "sort" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "direction" : {
+                  "type" : "string",
+                  "description" : "{ASC=ASC, DESC=DESC}",
+                  "enum" : [ "ASC", "DESC" ]
+                },
+                "property" : {
+                  "type" : "string",
+                  "description" : ""
+                },
+                "ignoreCase" : {
+                  "type" : "boolean",
+                  "description" : ""
+                },
+                "nullHandling" : {
+                  "type" : "string",
+                  "description" : "{NATIVE=NATIVE, NULLS_FIRST=NULLS_FIRST, NULLS_LAST=NULLS_LAST}",
+                  "enum" : [ "NATIVE", "NULLS_FIRST", "NULLS_LAST" ]
+                },
+                "ascending" : {
+                  "type" : "boolean"
+                },
+                "descending" : {
+                  "type" : "boolean"
+                }
+              },
+              "description" : "org.springframework.data.domain.Sort"
+            }
+          }
+        },
+        "description" : ""
+      },
+      "org.tutorial.tutorial_platform.vo.ChatMessageVO" : {
+        "type" : "object",
+        "properties" : {
+          "messageId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "sessionId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "senderId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "receiverId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "senderName" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "receiverName" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "content" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "createTime" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "pos" : {
+            "type" : "string",
+            "description" : "\"left\" 或 \"right\"，用于标识消息显示位置"
+          }
+        },
+        "description" : "org.tutorial.tutorial_platform.vo.ChatMessageVO"
+      },
+      "org.tutorial.tutorial_platform.vo.MatchTeacherVO" : {
+        "type" : "object",
+        "properties" : {
+          "userId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "username" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "gender" : {
+            "type" : "string",
+            "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+            "enum" : [ "MALE", "FEMALE", "OTHER" ]
+          },
+          "education" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "teachGrade" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "subject" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "score" : {
+            "type" : "number",
+            "description" : ""
+          },
+          "experience" : {
+            "type" : "integer",
+            "description" : ""
+          },
+          "hobby" : {
+            "type" : "string",
+            "description" : ""
+          }
+        },
+        "description" : "org.tutorial.tutorial_platform.vo.MatchTeacherVO"
+      },
+      "org.tutorial.tutorial_platform.vo.MatchStudentVO" : {
+        "type" : "object",
+        "properties" : {
+          "userId" : {
+            "type" : "integer",
+            "description" : "",
+            "format" : "int64"
+          },
+          "username" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "gender" : {
+            "type" : "string",
+            "description" : "{MALE=MALE, FEMALE=FEMALE, OTHER=OTHER}",
+            "enum" : [ "MALE", "FEMALE", "OTHER" ]
+          },
+          "grade" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "subject" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "score" : {
+            "type" : "number",
+            "description" : ""
+          },
+          "hobby" : {
+            "type" : "string",
+            "description" : ""
+          },
+          "goal" : {
+            "type" : "string",
+            "description" : ""
+          }
+        },
+        "description" : "org.tutorial.tutorial_platform.vo.MatchStudentVO"
+      }
+    }
+  }
 }

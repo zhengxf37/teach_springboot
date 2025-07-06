@@ -8,40 +8,40 @@ import java.util.List;
 public interface UserInteractionService {
 
 
-    /**
-     * 发布需求
-     * @return
-     */
-    Boolean publish(Long userId);
-
-    /**
-     * 删除需求
-     * @return
-     */
-    Boolean delete(Long userId);
-
-    /**
-     * 查询需求
-     *
-     * @return
-     */
-    Integer query(Long userId);
-    /**
-     *  申请匹配
-     * @return
-     */
-    Boolean want(Long userId, Long wantId);
-
-    /**
-     *  拒绝匹配
-     * @return
-     */
-    Boolean reject(Long userId);
-    /**
-     *  匹配成功
-     * @return
-     */
-    Boolean agree(Long userId);
+//    /**
+//     * 发布需求
+//     * @return
+//     */
+//    Boolean publish(Long userId);
+//
+//    /**
+//     * 删除需求
+//     * @return
+//     */
+//    Boolean delete(Long userId);
+//
+//    /**
+//     * 查询需求
+//     *
+//     * @return
+//     */
+//    Integer query(Long userId);
+//    /**
+//     *  申请匹配
+//     * @return
+//     */
+//    Boolean want(Long userId, Long wantId);
+//
+//    /**
+//     *  拒绝匹配
+//     * @return
+//     */
+//    Boolean reject(Long userId);
+//    /**
+//     *  匹配成功
+//     * @return
+//     */
+//    Boolean agree(Long userId);
     /**
      *  增加评价
      * @return
