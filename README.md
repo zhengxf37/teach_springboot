@@ -1,40 +1,141 @@
-# 简介
+# 后端项目简介
 
 ## 运行项目方法：
 
 ### 需要工具：
 
-1. 最新的mysql和mysql workbench软件
+1. 最新的MySQL和MySQL Workbench软件
 
    > 【手把手教你安装MySQL(最新版本安装)】https://www.bilibili.com/video/BV1jcabemEr7?vd_source=c911a68d69b8cda94014c7a000cfd2fe
 
-2. idea编辑器
+2. IDEA编辑器，里面配有Maven插件
 
 ### 运行：
 
+1. 打开mysql，可能开机自启，或自己在命令行打开服务
 
-
-1打开mysql，可能开机自启，或自己在命令行打开服务
-
-2打开workbench
-
-
+2. 打开workbench，创建数据库，密码统一为123456
 
 ![image-20250514214942054](assets/image-20250514214942054.png)
 
-3
+3. 输入建表语句创建库
 
 ![image-20250514215342931](assets/image-20250514215342931.png)
 
-代码
+代码：
 
-已经放在同文件夹的数据库文档里，防止避免更新不及时
+```mysql
+CREATE SCHEMA `tutorial_platform` ;
 
+CREATE TABLE `chat_message` (
+  `message_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` bigint unsigned NOT NULL,
+  `sender_id` bigint unsigned NOT NULL,
+  `receiver_id` bigint NOT NULL,
+  `content` varchar(1000) NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`message_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `chat_session` (
+  `session_id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `teacher_user_id` bigint unsigned NOT NULL,
+  `student_user_id` bigint unsigned NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_message_content` varchar(15) DEFAULT NULL,
+  `last_message_time` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`session_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `student` (
+  `student_id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `gender` enum('MALE','FEMALE','OTHER') NOT NULL,
+  `grade` varchar(20) NOT NULL,
+  `subject` varchar(30) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `phone` varchar(11) NOT NULL,
+  `score` decimal(5,2) NOT NULL,
+  `hobby` varchar(255) NOT NULL,
+  `goal` varchar(255) NOT NULL,
+  `addition` text NOT NULL,
+  `vector` text,
+  PRIMARY KEY (`student_id`),
+  UNIQUE KEY `user_id_UNIQUE` (`user_id`),
+  CONSTRAINT `fk_student_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `teacher` (
+  `teacher_id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `gender` enum('MALE','FEMALE','OTHER') NOT NULL,
+  `education` varchar(255) NOT NULL,
+  `teach_grade` varchar(255) NOT NULL,
+  `subject` varchar(30) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `phone` varchar(11) NOT NULL,
+  `experience` int NOT NULL,
+  `score` decimal(5,2) NOT NULL,
+  `hobby` varchar(255) NOT NULL,
+  `school` varchar(100) NOT NULL,
+  `addition` text NOT NULL,
+  `vector` text,
+  PRIMARY KEY (`teacher_id`),
+  UNIQUE KEY `user_id_UNIQUE` (`user_id`),
+  CONSTRAINT `fk_teacher_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `user` (
+  `user_id` bigint NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `user_type` enum('TEACHER','STUDENT') NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `username_UNIQUE` (`username`),
+  UNIQUE KEY `email_UNIQUE` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `user_comment` (
+  `comment_id` bigint NOT NULL AUTO_INCREMENT,
+  `content` text NOT NULL,
+  `from_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`comment_id`),
+  UNIQUE KEY `UKmqk7y35sce3k859d7g6munush` (`user_id`,`from_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `user_session_mapping` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `session_id` bigint unsigned NOT NULL,
+  `unread_count` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `FKp408fo5incignmxmg7pg3gn1v` (`session_id`),
+  CONSTRAINT `FKp408fo5incignmxmg7pg3gn1v` FOREIGN KEY (`session_id`) REFERENCES `chat_session` (`session_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `user_status` (
+  `user_id` bigint NOT NULL,
+  `status` int NOT NULL DEFAULT '0',
+  `want_id` bigint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `FKfs3p2l9uw8wycw403qpr5la1l` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `user_total_unread` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `total_unread` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+```
 
-4运行后端
+4. 运行后端项目
 
-打开idea
+方法一：IDEA中打开终端，在`tutorial_platform`目录下输入下面语句：
+
+```
+java -jar tutorial_platform-0.0.1-SNAPSHOT.jar
+```
+
+方法二：打开IDEA
 
 ![image-20250514215609553](assets/image-20250514215609553.png)
 
@@ -339,12 +440,7 @@ ResponseEntity.status(HttpStatus.FOUND)
 6. 使用 APIfox 测试 API
 7. 测试成功，创建DTO层和VO层
 
-## AI编程方法
 
-* 安装cursor
-* 打开对应文件夹，在右边AI处发送对应问题，注意要选中对应的文件代码，使AI有访问权限。
-
-![1a64145646ad8129f2ba1cc36bd8a67](assets/1a64145646ad8129f2ba1cc36bd8a67.png)
 
 ## 注意事项
 
